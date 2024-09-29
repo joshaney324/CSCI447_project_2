@@ -7,28 +7,19 @@ class BreastCancerSet:
     def __init__(self):
 
         # collect data and labels from the csv file
-        with open("../data/breast-cancer-wisconsin.data", "r") as data_file:
+        with open("../datasets/breast-cancer-wisconsin.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
 
-        # find invalid rows and delete them
-        invalid_rows = []
-        for i in range(len(self.data)):
-            for j in range(len(self.data[i])):
-                try:
-                    self.data[i][j] = int(self.data[i][j])
-                except ValueError:
-                    invalid_rows.append(i)
+        valid_rows = []
 
-        # delete the invalid rows
-        for row in invalid_rows:
-            del self.data[row]
-
-        # Remove the ID column
         for row in self.data:
-            del row[0]
-        
-        # convert the data into a numpy array and shuffle it
-        self.data = np.array(self.data)
+            if all(value.isdigit() for value in row):
+                valid_rows.append(row)
+
+        for i in range(len(valid_rows)):
+            del valid_rows[i][0]
+
+        self.data = np.array(valid_rows, dtype=int)
         np.random.shuffle(self.data)
 
     def get_data(self):
