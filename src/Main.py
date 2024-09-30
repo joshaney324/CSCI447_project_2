@@ -1,7 +1,16 @@
 from KNN import predict_classification
 from BreastCancerSet import BreastCancerSet
+from Abalone import AbaloneSet
+from Hardware import MachineSet
+from ForestFires import ForestFiresSet
 from Metric_functions import precision, recall, accuracy
 import numpy as np
+
+forestFires = ForestFiresSet()
+abaloneSet = AbaloneSet()
+machineSet = MachineSet()
+
+# --- 
 
 breastCancer = BreastCancerSet()
 

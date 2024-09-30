@@ -7,7 +7,7 @@ class SoyBeanSet:
     def __init__(self):
 
         # read in the data from the csv file
-        with open("../data/soybean-small.data", "r") as data_file:
+        with open("../datasets/soybean-small.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
 
         # convert data to a numpy array, remove extra row, and shuffle

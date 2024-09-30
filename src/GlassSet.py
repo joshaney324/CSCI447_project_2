@@ -12,7 +12,7 @@ class GlassSet:
     def __init__(self, num_bins, num_classes):
 
         # read in data from csv file
-        with open("../data/glass.data", "r") as data_file:
+        with open("../datasets/glass.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
 
         # check for invalid rows and remove them
