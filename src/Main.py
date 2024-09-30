@@ -15,7 +15,7 @@ train_labels, test_labels = train_labels[:600], train_labels[600:]
 
 predictions = []
 for instance in test_data:
-    predictions.append(predict_classification(train_data, train_labels, instance, 6, 2))
+    predictions.append(predict_classification(train_data, train_labels, instance, 3, 2))
 
 predictions = np.array(predictions)
 test_labels = np.array(test_labels)
@@ -30,9 +30,9 @@ train_labels, test_labels = train_labels[:4130], train_labels[4131:]
 
 predictions = []
 for instance in test_data:
-    predictions.append(math.floor(predict_regression(train_data, train_labels, instance, 6, 2, 10) + 0.5))
+    predictions.append(math.floor(predict_regression(train_data, train_labels, instance, 4, 2, 10) + 0.5))
 
 predictions = np.array(predictions)
 test_labels = np.array(test_labels)
-print(mean_squared_error(test_labels, predictions, 1))
+print(mean_squared_error(test_labels, predictions, len(predictions)))
 
