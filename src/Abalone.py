@@ -1,13 +1,13 @@
 import csv
 import numpy as np
-import random as random
 from HelperFunctions import binary_encoding
+
 
 class AbaloneSet:
     def __init__(self):
 
         # read in the data from the csv file
-        with open("../datasets/forestfires.data", "r") as data_file:
+        with open("../datasets/abalone.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
         # skip header row
         self.data = self.data[1:]
@@ -17,7 +17,7 @@ class AbaloneSet:
         np.random.shuffle(self.data)
 
         # apply binary coding to categorical columns
-        self.data = binary_encoding(self.data, [2, 3])
+        self.data = binary_encoding(self.data, [0])
 
     def get_data(self):
         # return only data and no labels
