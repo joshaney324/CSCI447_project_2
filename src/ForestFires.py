@@ -8,6 +8,7 @@ import numpy as np
 import random as random
 from HelperFunctions import binary_encoding
 
+
 class ForestFiresSet:
     def __init__(self):
 
@@ -23,6 +24,7 @@ class ForestFiresSet:
 
         # apply binary coding to categorical columns
         self.data = binary_encoding(self.data, [2, 3])
+        self.data = np.array(self.data, dtype=float)
 
     def get_data(self):
         # return only data and no labels

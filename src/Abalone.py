@@ -18,6 +18,7 @@ class AbaloneSet:
 
         # apply binary coding to categorical columns
         self.data = binary_encoding(self.data, [0])
+        self.data = np.array(self.data, dtype=float)
 
     def get_data(self):
         # return only data and no labels
