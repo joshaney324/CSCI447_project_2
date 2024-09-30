@@ -10,9 +10,6 @@ def minkowski_metrics(initial_point, target_point, p):
     return total ** (1/p)
 
 
-def rbf_kernel(distance, sigma):
-    return np.exp(-(distance ** 2) / (2 * sigma ** 2))
-
 
 # def cross_validate(data_folds, label_folds):
 #     # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
