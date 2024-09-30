@@ -8,55 +8,26 @@ from Abalone import AbaloneSet
 from ForestFires import ForestFiresSet
 from Hardware import MachineSet
 from Metric_functions import precision, recall, accuracy, mean_squared_error
+from HelperFunctions import get_folds, cross_validate_classification
 import numpy as np
 
 # BREAST CANCER
 breastCancer = BreastCancerSet()
-train_data = breastCancer.get_data()
-train_labels = breastCancer.get_labels()
-train_data, test_data = train_data[:600], train_data[600:]
-train_labels, test_labels = train_labels[:600], train_labels[600:]
-
-predictions = []
-for instance in test_data:
-    predictions.append(predict_classification(train_data, train_labels, instance, 3, 2))
-
-predictions = np.array(predictions)
-test_labels = np.array(test_labels)
+data_folds, data_labels = get_folds(breastCancer, 10)
 print("Breast Cancer")
-print(np.mean(test_labels == predictions))
+cross_validate_classification(data_folds, data_labels, 6, 2)
 
 # SOY BEAN
 soy = SoyBeanSet()
-train_data = soy.get_data()
-train_labels = soy.get_labels()
-train_data, test_data = train_data[:40], train_data[41:]
-train_labels, test_labels = train_labels[:40], train_labels[41:]
-
-predictions = []
-for instance in test_data:
-    predictions.append(predict_classification(train_data, train_labels, instance, 3, 2))
-
-predictions = np.array(predictions)
-test_labels = np.array(test_labels)
-print("Soy bean")
-print(np.mean(test_labels == predictions))
+data_folds, data_labels = get_folds(soy, 10)
+print("Soy")
+cross_validate_classification(data_folds, data_labels, 6, 2)
 
 # GLASS
 glass = GlassSet(7)
-train_data = glass.get_data()
-train_labels = glass.get_labels()
-train_data, test_data = train_data[:190], train_data[191:]
-train_labels, test_labels = train_labels[:190], train_labels[191:]
-
-predictions = []
-for instance in test_data:
-    predictions.append(predict_classification(train_data, train_labels, instance, 3, 2))
-
-predictions = np.array(predictions)
-test_labels = np.array(test_labels)
+data_folds, data_labels = get_folds(glass, 10)
 print("Glass")
-print(np.mean(test_labels == predictions))
+cross_validate_classification(data_folds, data_labels, 6, 2)
 
 # ABALONE
 abalone = AbaloneSet()
@@ -100,7 +71,7 @@ train_labels, test_labels = train_labels[:190], train_labels[191:]
 
 predictions = []
 for instance in test_data:
-    predictions.append(predict_regression(train_data, train_labels, instance, 3, 2, 10))
+    predictions.append(predict_regression(train_data, train_labels, instance, 3, 2, 40))
 
 predictions = np.array(predictions)
 test_labels = np.array(test_labels)

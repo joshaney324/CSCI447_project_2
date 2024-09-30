@@ -1,4 +1,4 @@
-from HelperFunctions import minkowski_metrics, rbf_kernel
+from Metric_functions import minkowski_metrics, rbf_kernel
 import numpy as np
 
 

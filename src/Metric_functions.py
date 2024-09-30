@@ -1,6 +1,18 @@
 import numpy as np
 
 
+def minkowski_metrics(initial_point, target_point, p):
+    total = 0
+    for feature_i, feature_t in zip(initial_point, target_point):
+        total += abs(feature_i - feature_t) ** p
+
+    return total ** (1/p)
+
+
+def rbf_kernel(distance, sigma):
+    return np.exp(- (distance ** 2) / (2 * sigma ** 2))
+
+
 def mean_squared_error(predictions, true_vals, n):
     error = 0.0
 
