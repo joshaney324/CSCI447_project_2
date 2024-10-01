@@ -18,8 +18,8 @@ class ForestFiresSet:
         # skip header row
         self.data = self.data[1:]
 
-        # convert data to a numpy array, remove extra row, and shuffle
-        self.data = np.array(self.data[:-1])
+        # convert data to a numpy array, and shuffle
+        self.data = np.array(self.data)
         np.random.shuffle(self.data)
 
         # apply binary coding to categorical columns

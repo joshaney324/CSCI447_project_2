@@ -9,16 +9,12 @@ class AbaloneSet:
         # read in the data from the csv file
         with open("../datasets/abalone.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
-        # skip header row
-        self.data = self.data[1:]
 
-        # convert data to a numpy array, remove extra row, and shuffle
-        self.data = np.array(self.data[:-1])
-        np.random.shuffle(self.data)
-
+        self.data = np.array(self.data)
         # apply binary coding to categorical columns
         self.data = binary_encoding(self.data, [0])
         self.data = np.array(self.data, dtype=float)
+        np.random.shuffle(self.data)
 
     def get_data(self):
         # return only data and no labels

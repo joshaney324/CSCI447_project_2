@@ -147,7 +147,7 @@ def cross_validate_regression(data_folds, label_folds, k_nearest_neighbors, p, s
     return mean_squared_error_avg / folds
 
 
-def get_folds(data, labels, num_folds):
+def get_folds_classification(data, labels, num_folds):
 
     # the get_folds function is meant to split the data up into a specified number of folds. this function takes in a
     # Dataset object as well as a specified number of folds. it then returns a list of all the data folds and label
@@ -199,6 +199,10 @@ def get_folds(data, labels, num_folds):
     return data_folds, label_folds
 
 
+def get_folds_regression(data, labels, num_folds):
+    return np.array_split(data, num_folds, 0), np.array_split(labels, num_folds)
+
+
 def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
     avg_metric = 0.0
     k = None
@@ -222,6 +226,13 @@ def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, 
                 avg_metric = avg_val
                 k = k_val
                 p = p_val
+                print("Best parameters so far")
+                print("Precision: " + str(avg_precision))
+                print("Recall: " + str(avg_recall))
+                print("Accuracy: " + str(avg_accuracy))
+                print("Average Metric: " + str(avg_val))
+                print("K: " + str(k))
+                print("P: " + str(p))
 
     return k, p
 
@@ -244,6 +255,8 @@ def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test
                         k = k_val
                         p = p_val
                         sigma = sigma_val
+                        print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
+                        print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
                 except ZeroDivisionError:
                     print("ZeroDivisionError")
 
