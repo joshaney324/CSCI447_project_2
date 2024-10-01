@@ -1,3 +1,4 @@
+import math
 from Metric_functions import precision, recall, accuracy, mean_squared_error
 import numpy as np
 from KNN import predict_regression, predict_classification
@@ -30,6 +31,7 @@ def binary_encoding(data, indices):
                 encoded_row.append(float(value))
         binary_encoded_data.append(encoded_row)
     return np.array(binary_encoded_data)
+
 
 def cross_validate_classification(data_folds, label_folds, k_nearest_neighbors, p):
     # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
@@ -97,11 +99,6 @@ def cross_validate_classification(data_folds, label_folds, k_nearest_neighbors, 
         recall_avg += recall_total / counter
         accuracy_avg += accuracy_total / counter
 
-        # print("Fold " + str(i + 1))
-        # print("Precision: " + str(precision_total/counter))
-        # print("Recall: " + str(recall_total/counter))
-        # print("Accuracy: " + str(accuracy_total/counter))
-
     print("Average precision: " + str(precision_avg / folds))
     print("Average recall: " + str(recall_avg / folds))
     print("Average accuracy: " + str(accuracy_avg / folds))
@@ -109,14 +106,54 @@ def cross_validate_classification(data_folds, label_folds, k_nearest_neighbors, 
     return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds], matrix_total, accuracies, all_predictions, all_labels
 
 
-def get_folds(dataset, num_folds):
+def cross_validate_regression(data_folds, label_folds, k_nearest_neighbors, p, sigma):
+    # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
+    # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
+    # return anything but prints out the metrics
+
+    # Set up variables
+    mean_squared_error_avg = 0.0
+    folds = len(data_folds)
+
+    # For each testing fold, set up a training and testing set and then append the loss function values
+    for i in range(len(data_folds)):
+        train_data = []
+        test_data = []
+        train_labels = []
+        test_labels = []
+        for j in range(len(data_folds)):
+            if i != j:
+                for instance, label in zip(data_folds[j], label_folds[j]):
+                    train_data.append(instance)
+                    train_labels.append(label)
+            else:
+                for instance, label in zip(data_folds[j], label_folds[j]):
+                    test_data.append(instance)
+                    test_labels.append(label)
+
+        # make all the data into np arrays so that naive bayes class can use them
+        train_data = np.array(train_data)
+        train_labels = np.array(train_labels)
+        test_data = np.array(test_data)
+        test_labels = np.array(test_labels)
+
+        predictions = []
+        for datapoint in test_data:
+            predictions.append(predict_regression(train_data, train_labels, datapoint, k_nearest_neighbors, p, sigma))
+
+        mean_squared_error_avg += mean_squared_error(test_labels, predictions, len(predictions))
+
+    print("average mean squared error: " + str(mean_squared_error_avg / folds))
+    return mean_squared_error_avg / folds
+
+
+def get_folds(data, labels, num_folds):
 
     # the get_folds function is meant to split the data up into a specified number of folds. this function takes in a
     # Dataset object as well as a specified number of folds. it then returns a list of all the data folds and label
     # folds
 
-    labels = dataset.get_labels()
-    data = dataset.get_data()
+
 
     # determine the number of instances of each class in each fold,
     # storing the values in a 2d numpy array (each row is a fold, each column is a class)
@@ -160,3 +197,70 @@ def get_folds(dataset, num_folds):
                 k += 1
     # return a tuple of data_folds, label_folds
     return data_folds, label_folds
+
+
+def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
+    avg_metric = 0.0
+    k = None
+    p = None
+    for p_val in p_vals:
+        for k_val in k_vals:
+            predictions = []
+            for test_point in test_data:
+                predictions.append(predict_classification(train_data, train_labels, test_point, k_val, p_val))
+            precisions = precision(predictions, test_labels)
+            recalls = recall(predictions, test_labels)
+            accuracies, matrix = accuracy(predictions, test_labels)
+
+            avg_precision = sum(precision_vals for _, precision_vals in precisions) / len(precisions)
+            avg_recall = sum(recall_vals for _, recall_vals in recalls) / len(recalls)
+            avg_accuracy = sum(accuracy_vals for _, accuracy_vals in accuracies) / len(accuracies)
+
+            avg_val = (avg_accuracy + avg_precision + avg_recall) / 3
+
+            if avg_metric < avg_val:
+                avg_metric = avg_val
+                k = k_val
+                p = p_val
+
+    return k, p
+
+
+def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals, sigma_vals):
+    min_mean_squared_error = math.inf
+    k = None
+    p = None
+    sigma = None
+    for p_val in p_vals:
+        for k_val in k_vals:
+            for sigma_val in sigma_vals:
+                predictions = []
+                try:
+                    for test_point in test_data:
+                        predictions.append(predict_regression(train_data, train_labels, test_point, k_val, p_val, sigma_val))
+                    mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
+                    if mean_squared_val < min_mean_squared_error:
+                        min_mean_squared_error = mean_squared_val
+                        k = k_val
+                        p = p_val
+                        sigma = sigma_val
+                except ZeroDivisionError:
+                    print("ZeroDivisionError")
+
+    return k, p, sigma
+
+
+def get_tune_folds(data_folds, label_folds):
+    test_data = np.array(data_folds[-1])
+    test_labels = np.array(label_folds[-1])
+    train_data = []
+    train_labels = []
+    for j in range(len(data_folds) - 1):
+        for instance, label in zip(data_folds[j], label_folds[j]):
+            train_data.append(instance)
+            train_labels.append(label)
+
+    train_data = np.array(train_data)
+    train_labels = np.array(train_labels)
+
+    return test_data, test_labels, train_data, train_labels

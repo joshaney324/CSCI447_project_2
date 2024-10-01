@@ -6,6 +6,7 @@ def minkowski_metrics(initial_point, target_point, p):
     for feature_i, feature_t in zip(initial_point, target_point):
         total += abs(feature_i - feature_t) ** p
 
+
     return total ** (1/p)
 
 
