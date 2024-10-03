@@ -249,6 +249,7 @@ def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test
                 try:
                     for test_point in test_data:
                         predictions.append(predict_regression(train_data, train_labels, test_point, k_val, p_val, sigma_val))
+                    predictions = np.array(predictions)
                     mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
                     if mean_squared_val < min_mean_squared_error:
                         min_mean_squared_error = mean_squared_val

@@ -10,7 +10,7 @@ def minkowski_metrics(initial_point, target_point, p):
 
 
 def rbf_kernel(distance, sigma):
-    return np.exp(- (distance ** 2) / (2 * sigma ** 2)) + 0.00000000000000000000001
+    return np.exp(- (distance ** 2) / (2 * sigma ** 2))
 
 
 def mean_squared_error(predictions, true_vals, n):
