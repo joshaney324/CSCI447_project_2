@@ -1,7 +1,7 @@
 import math
 from random import random
 
-from Metric_functions import minkowski_metrics, rbf_kernel
+from Metric_functions import minkowski_metrics, rbf_kernel, mean_squared_error
 import numpy as np
 
 
@@ -150,3 +150,32 @@ def edited_nearest_neighbors_classification(train_data, train_labels, tolerance)
 
     return edited_dataset
 
+
+def edited_nearest_neighbors_regression(train_data, train_labels, error, tolerance, sigma):
+    if train_labels.ndim == 1:
+        train_labels = train_labels.reshape(-1, 1)
+    edited_dataset = np.concatenate((train_data, train_labels), axis=1)
+    new_performance = 1.0
+    old_performance = 0.0
+    improved = True
+
+    while improved:
+        new_dataset = []
+        predictions = []
+        for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
+            if abs(predict_regression(edited_dataset[:, :-1], edited_dataset[:, -1], instance, 2, 2, sigma) - label) <= error:
+                new_dataset.append(np.append(instance, label))
+        new_dataset = np.array(new_dataset)
+        for instance in train_data:
+            predictions.append(predict_regression(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2, sigma))
+
+        predictions = np.array(predictions)
+        new_performance = mean_squared_error(predictions, train_labels, len(predictions))
+
+        if old_performance - new_performance < tolerance or old_performance < new_performance:
+            improved = False
+        else:
+            edited_dataset = new_dataset
+            old_performance = new_performance
+
+    return edited_dataset

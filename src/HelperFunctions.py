@@ -264,7 +264,7 @@ def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, 
 
             avg_val = (avg_accuracy + avg_precision + avg_recall) / 3
 
-            if avg_metric < avg_val:
+            if avg_metric <= avg_val:
                 avg_metric = avg_val
                 k = k_val
                 p = p_val
