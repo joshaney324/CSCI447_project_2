@@ -1,3 +1,4 @@
+import math
 from random import random
 
 from Metric_functions import minkowski_metrics, rbf_kernel
@@ -61,8 +62,10 @@ def predict_regression(train_data, train_labels, test_point, k_neighbors, p, sig
     k_nearest_distances = np.array(k_nearest_distances)
 
     # get the weighted average by multiplying the weights by the distances and divided it by the sum of the weights
-    # weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
-    weighted_average = np.sum(k_nearest_distances[:, 1] * k_nearest_distances[:, 0]) / np.sum(k_nearest_distances[:, 1])
+    weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
+    # if math.isnan(weighted_average):
+    #     return 0
+    # weighted_average = np.sum(k_nearest_distances[:, 1] * k_nearest_distances[:, 0]) / np.sum(k_nearest_distances[:, 1])
 
     # return the weighted average
     return weighted_average

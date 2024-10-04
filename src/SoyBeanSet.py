@@ -14,6 +14,16 @@ class SoyBeanSet:
         self.data = np.array(self.data[:-1])
         np.random.shuffle(self.data)
 
+        unique_classes = np.unique(self.data[:, -1])
+        numerical_class_labels = {}
+        for i, unique_class in enumerate(unique_classes):
+            numerical_class_labels[unique_class] = i
+
+        for i in range(len(self.data)):
+            self.data[i, -1] = numerical_class_labels[self.data[i, -1]]
+
+        self.data = np.array(self.data, dtype=float)
+
     def get_data(self):
         # return only data and no labels
         return np.array(self.data[:, :-1], dtype=float)

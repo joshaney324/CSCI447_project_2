@@ -200,7 +200,49 @@ def get_folds_classification(data, labels, num_folds):
 
 
 def get_folds_regression(data, labels, num_folds):
-    return np.array_split(data, num_folds, 0), np.array_split(labels, num_folds)
+
+    # Turn the data and labels into np arrays
+    data = np.array(data)
+    labels = np.array(labels)
+
+    # Make sure it's the right shape
+    if labels.ndim == 1:
+        labels = labels.reshape(-1, 1)
+
+    # Concatenate
+    dataset = np.concatenate((data, labels), axis=1)
+
+    # get a list of sorted indices and put the dataset into the correct order
+    sorted_indices = np.argsort(dataset[:, -1])
+    dataset = dataset[sorted_indices, :]
+
+    # get groups of 10 consecutive data points and append it to the list of groups
+    datapoint_groups = []
+    for i in range(0, len(dataset), 10):
+        group = dataset[i:i + 10]
+        datapoint_groups.append(group)
+
+    # Create 10 empty folds
+    folds = [[] for _ in range(num_folds)]
+
+    # for every group in datapoint_groups take a particular group and put each value from the specific group into the
+    # specified folds
+    for i, group in enumerate(datapoint_groups):
+        for j, row in enumerate(group):
+            fold_index = (j + i) % num_folds
+            folds[fold_index].append(row)
+
+    # make all folds np arrays
+    folds = [np.array(fold) for fold in folds]
+    data_folds = []
+    label_folds = []
+
+    # Create fold variables for labels and data
+    for fold in folds:
+        data_folds.append(fold[:, :-1])
+        label_folds.append(fold[:, -1])
+
+    return data_folds, label_folds
 
 
 def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
