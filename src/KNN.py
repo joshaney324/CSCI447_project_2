@@ -128,18 +128,22 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             centroids[centroid_index] = centroid_ave
         print(total_diff)
     #assign each centroid its nearest neighbor's class
-    centroid_classes = np.empty(train_labels.shape)
+    centroid_labels = np.empty(train_labels.shape)
     for centroid_index in range(centroids.shape[0]):
         min_distance = sys.maxsize
         for entry_index in range(train_labels.shape[0]):
             if minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2) < min_distance:
-                centroid_classes[centroid_index] = train_labels[entry_index]
+                centroid_labels[centroid_index] = train_labels[entry_index]
                 min_distance = minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2)
-    return zip(centroids, centroid_classes)
+    return zip(centroids, centroid_labels)
 
-def clustered_classification(train_data, train_labels, num_clusters, num_neighbors, p, test_point):
+def clustered_classification(train_data, train_labels, test_point, num_neighbors, p, num_clusters):
     centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
     return predict_classification(centroids, centroid_labels, test_point, num_neighbors, p)
+
+def clustered_regression(train_data, train_labels, test_point, num_neighbors, p, sigma, num_clusters):
+    centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
+    return predict_regression(centroids, centroid_labels, test_point, num_neighbors, p, sigma)
 
 
 def edited_nearest_neighbors_classification(train_data, train_labels, tolerance):
