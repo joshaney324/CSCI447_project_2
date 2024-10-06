@@ -77,7 +77,6 @@ def predict_regression(train_data, train_labels, test_point, k_neighbors, p, sig
 # the centroids no longer move
 def k_means_cluster(train_data, train_labels, num_clusters):
     # get number of features for each cluster and declare a 2d list cluster positions
-    print(num_clusters)
     num_features = train_data.shape[1]
     centroids = np.empty((num_clusters, num_features))
     # generate starter values for each of the features between the minimum and maximum values for that feature
@@ -109,17 +108,15 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             # create an array to store the totals of all features of all assigned entries for the centroid
             centroid_ave = np.zeros(centroids.shape[1])
             counter = 0
-            has_assigned_entries = False
             # add the features of each point assigned to the centroid to the total of all features for the centroid
             for entry_index in range(train_data.shape[0]):
                 if centroid_assignments[entry_index] == centroid_index:
-                    if has_assigned_entries:
-                        centroid_ave += train_data[entry_index]
+                    if counter > 0:
+                        centroid_ave = centroid_ave + train_data[entry_index]
                         counter += 1
                     else:
                         centroid_ave = train_data[entry_index]
                         counter += 1
-                        has_assigned_entries = True
             # take the average features of all entries assigned to the cluster, or leave the cluster as is if no entries were assigned.
             if counter == 0:
                 centroid_ave = centroids[centroid_index]
@@ -127,10 +124,9 @@ def k_means_cluster(train_data, train_labels, num_clusters):
                 centroid_ave = centroid_ave / counter
             # add the change in the centroid to the total of all changes in all centroids
             total_diff += minkowski_metrics(centroid_ave, centroids[centroid_index], 2)
-            print(minkowski_metrics(centroid_ave, centroids[centroid_index], 2))
             # reassign the centroid position
             centroids[centroid_index] = centroid_ave
-        print("total: " + str(total_diff))
+        print(total_diff)
     #assign each centroid its nearest neighbor's class
     centroid_classes = np.empty(train_labels.shape)
     for centroid_index in range(centroids.shape[0]):
@@ -140,6 +136,10 @@ def k_means_cluster(train_data, train_labels, num_clusters):
                 centroid_classes[centroid_index] = train_labels[entry_index]
                 min_distance = minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2)
     return zip(centroids, centroid_classes)
+
+def clustered_classification(train_data, train_labels, num_clusters, num_neighbors, p, test_point):
+    centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
+    return predict_classification(centroids, centroid_labels, test_point, num_neighbors, p)
 
 
 def edited_nearest_neighbors_classification(train_data, train_labels, tolerance):

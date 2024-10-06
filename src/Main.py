@@ -13,7 +13,6 @@ from HelperFunctions import (get_folds_classification, get_folds_regression, cro
 
 # BREAST CANCER
 breastCancer = BreastCancerSet()
-k_means_cluster(breastCancer.get_data(), breastCancer.get_labels(), int(math.sqrt(breastCancer.get_data().shape[0])))
 data_folds, label_folds = get_folds_classification(breastCancer.get_data(), breastCancer.get_labels(), 10)
 print("Breast Cancer")
 test_data, test_labels, train_data, train_labels = get_tune_folds(data_folds, label_folds)
