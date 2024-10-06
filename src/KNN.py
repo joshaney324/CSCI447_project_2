@@ -78,7 +78,7 @@ def predict_regression(train_data, train_labels, test_point, k_neighbors, p, sig
 def k_means_cluster(train_data, train_labels, num_clusters):
     # get number of features for each cluster and declare a 2d list cluster positions
     num_features = train_data.shape[1]
-    centroids = np.empty((num_clusters, num_features))
+    centroids = np.empty((int(num_clusters), num_features))
     # generate starter values for each of the features between the minimum and maximum values for that feature
     for feature_index in range(centroids.shape[1]):
         max_val = np.max(train_data[:, feature_index])
@@ -127,7 +127,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             # reassign the centroid position
             centroids[centroid_index] = centroid_ave
         print(total_diff)
-    #assign each centroid its nearest neighbor's class
+    # assign each centroid its nearest neighbor's class
     centroid_labels = np.empty(train_labels.shape)
     for centroid_index in range(centroids.shape[0]):
         min_distance = sys.maxsize
@@ -135,71 +135,123 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             if minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2) < min_distance:
                 centroid_labels[centroid_index] = train_labels[entry_index]
                 min_distance = minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2)
-    return zip(centroids, centroid_labels)
-
-def clustered_classification(train_data, train_labels, test_point, num_neighbors, p, num_clusters):
-    centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
-    return predict_classification(centroids, centroid_labels, test_point, num_neighbors, p)
-
-def clustered_regression(train_data, train_labels, test_point, num_neighbors, p, sigma, num_clusters):
-    centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
-    return predict_regression(centroids, centroid_labels, test_point, num_neighbors, p, sigma)
+    return centroids, centroid_labels
 
 
-def edited_nearest_neighbors_classification(train_data, train_labels, tolerance):
+# def clustered_classification(train_data, train_labels, test_point, num_neighbors, p, num_clusters):
+#     centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
+#     return predict_classification(centroids, centroid_labels, test_point, num_neighbors, p)
+
+
+# def clustered_regression(train_data, train_labels, test_point, num_neighbors, p, sigma, num_clusters):
+#     centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
+#     return predict_regression(centroids, centroid_labels, test_point, num_neighbors, p, sigma)
+
+
+def edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, tolerance):
+    # Force a shape on train labels so you can concatenate
     if train_labels.ndim == 1:
         train_labels = train_labels.reshape(-1, 1)
+
+    # Concatenate data and labels
     edited_dataset = np.concatenate((train_data, train_labels), axis=1)
+
+    # Set tracker variables for performance
     new_performance = 1.0
     old_performance = 0.0
     improved = True
+    counter = 0
 
     while improved:
+        # Create a new dataset to append all correct predictions to
         new_dataset = []
+
+        # Create predictions list
         predictions = []
+
+        # Test each data point in the dataset to see if it is predicted wrong
         for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
-            if predict_classification(edited_dataset[:, :-1], edited_dataset[:, -1], instance, 2, 2) == label:
+
+            # Get the data point to remove for the training set
+            removed_point = np.append(instance, label)
+            remove_test_point_data = []
+
+            # Remove the data point from the train set
+            for data_point in edited_dataset:
+                if not np.array_equal(data_point, removed_point):
+                    remove_test_point_data.append(data_point)
+
+            # Convert to np array
+            remove_test_point_data = np.array(remove_test_point_data)
+
+            # Predict the label
+            # Use the train set without the test instance
+            # If the classifier gets it right add the point to the new dataset
+            if predict_classification(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2) == label:
                 new_dataset.append(np.append(instance, label))
+
+        # Convert the new dataset to an np array
         new_dataset = np.array(new_dataset)
-        for instance in train_data:
+
+        # Use the new dataset as the training data and test against the test set
+        for instance in test_data:
             predictions.append(predict_classification(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2))
 
-        predictions = np.array(predictions)
-        new_performance = np.mean(predictions == train_labels.flatten())
+        # Get a new performance
+        new_performance = np.mean(predictions == test_labels)
 
-        if new_performance - old_performance < tolerance:
+        # if the performance has been worse for the past 6 times break out and return the dataset e
+        if counter > 6:
             improved = False
+        # if the counter has not gotten to 6 but the performance was worse increase the counter
+        elif old_performance - new_performance > tolerance and counter < 6:
+            counter += 1
+        # else set the new performance
         else:
             edited_dataset = new_dataset
             old_performance = new_performance
+            counter = 0
     return edited_dataset
 
 
-def edited_nearest_neighbors_regression(train_data, train_labels, error, tolerance, sigma):
+def edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, error, tolerance, sigma):
     if train_labels.ndim == 1:
         train_labels = train_labels.reshape(-1, 1)
     edited_dataset = np.concatenate((train_data, train_labels), axis=1)
     new_performance = 1.0
     old_performance = 0.0
     improved = True
+    counter = 0
 
     while improved:
         new_dataset = []
         predictions = []
+        remove_test_point_data = []
+
         for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
-            if abs(predict_regression(edited_dataset[:, :-1], edited_dataset[:, -1], instance, 2, 2, sigma) - label) <= error:
+            removed_point = np.append(instance, label)
+            remove_test_point_data = []
+            for data_point in edited_dataset:
+                if not np.array_equal(data_point, removed_point):
+                    remove_test_point_data.append(data_point)
+
+        for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
+            if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
                 new_dataset.append(np.append(instance, label))
         new_dataset = np.array(new_dataset)
-        for instance in train_data:
+        for instance in test_data:
             predictions.append(predict_regression(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2, sigma))
 
         predictions = np.array(predictions)
-        new_performance = mean_squared_error(predictions, train_labels, len(predictions))
+        new_performance = mean_squared_error(predictions, test_labels, len(predictions))
 
-        if old_performance - new_performance < tolerance or old_performance < new_performance:
+        if new_performance - old_performance < tolerance and counter > 6:
             improved = False
+        elif new_performance - old_performance < tolerance and counter < 6:
+            counter += 1
         else:
             edited_dataset = new_dataset
             old_performance = new_performance
+            counter = 0
 
     return edited_dataset
