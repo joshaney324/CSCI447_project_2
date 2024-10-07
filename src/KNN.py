@@ -199,6 +199,7 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             predictions.append(predict_classification(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2))
 
         # Get a new performance
+        predictions = np.array(predictions)
         new_performance = np.mean(predictions == test_labels)
 
         # if the performance has been worse for the past 6 times break out and return the dataset e
@@ -252,8 +253,7 @@ def edited_nearest_neighbors_regression(train_data, train_labels, test_data, tes
                     remove_test_point_data.append(data_point)
                     break
 
-        # Predict the label using the training set without the test instance
-        for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
+            # Predict the label using the training set without the test instance
             if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
                 new_dataset.append(np.append(instance, label))
 
