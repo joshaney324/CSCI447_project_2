@@ -4,6 +4,8 @@ from KNN import predict_regression, predict_classification
 from Metric_functions import precision, recall, accuracy, mean_squared_error
 import math as math
 
+from src.KNN import edited_nearest_neighbors_regression
+
 
 def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
     avg_metric = 0.0
@@ -40,26 +42,44 @@ def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, 
 
 
 def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals, sigma_vals):
-    min_mean_squared_error = math.inf
+    mean_squared_errors = [len(k_vals)][len(p_vals)][len(sigma_vals)]
+    min_mean_squared_error = (0, 0, 0)
     k = None
     p = None
     sigma = None
-    for p_val in p_vals:
-        for k_val in k_vals:
-            for sigma_val in sigma_vals:
+    for k_val_index in range(len(k_vals)):
+        for p_val_index in range(len(p_vals)):
+            for sigma_val_index in range(len(sigma_vals)):
                 predictions = []
                 for test_point in test_data:
-                    predictions.append(predict_regression(train_data, train_labels, test_point, k_val, p_val, sigma_val))
+                    predictions.append(predict_regression(train_data, train_labels, test_point, k_vals[k_val_index], p_vals[p_val_index], sigma_vals[sigma_val_index]))
 
                 predictions = np.array(predictions)
-                mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
-                if mean_squared_val < min_mean_squared_error:
-                    min_mean_squared_error = mean_squared_val
-                    k = k_val
-                    p = p_val
-                    sigma = sigma_val
-                    print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
-                    print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
+                #mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
+                mean_squared_errors[k_val_index][p_val_index][sigma_val_index] = mean_squared_errors[k_val_index][p_val_index][sigma_val_index] + mean_squared_error(test_labels, predictions, len(predictions))
+                #if mean_squared_val < min_mean_squared_error:
+                #    min_mean_squared_error = mean_squared_val
+                #    k = k_val
+                #    p = p_val
+                #    sigma = sigma_val
+                #    print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
+                #    print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
 
-    return k, p, sigma
+    for k_val_index in range(len(k_vals)):
+        for p_val_index in range(len(p_vals)):
+            for sigma_val_index in range(len(sigma_vals)):
+                if mean_squared_errors[k_val_index][p_val_index][sigma_val_index] < mean_squared_errors[min_mean_squared_error[0], min_mean_squared_error[1], min_mean_squared_error[2]]:
+                    min_mean_squared_error = (k_val_index, p_val_index, sigma_val_index)
 
+    return k_vals[min_mean_squared_error[0]], p_vals[min_mean_squared_error[1]], sigma_vals[min_mean_squared_error[2]], mean_squared_errors[min_mean_squared_error[0], min_mean_squared_error[1], min_mean_squared_error[2]]
+
+def hyperparameter_tune_edited_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals, sigma_vals, threshold_vals, tolerance):
+    optimal = (0, 0, 0, 0, 0, 0)
+    for threshold_val in threshold_vals:
+        for sigma_val in sigma_vals:
+            edited_dataset = edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, threshold_val, tolerance, sigma_val)
+            k, p, sigma, mean_squared_error = hyperparameter_tune_knn_regression(edited_dataset[:, :-1], edited_dataset[:, -1], test_data, test_labels, k_vals, p_vals, sigma_val)
+            if mean_squared_error < optimal[5]:
+                optimal = (k, p, sigma, threshold_val, mean_squared_error)
+
+    return optimal
