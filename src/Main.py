@@ -27,19 +27,20 @@ data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
 breast_metrics, _, _, _, _ = cross_validate_classification(data_folds, label_folds, k, p)
 
 print("edited nearest neighbor")
-edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.1)
-
 predictions = []
-print("k-means")
-centroids, centroid_labels = k_means_cluster(train_data, train_labels, len(edited_dataset) ** (1/2))
+edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.5)
 for data_point in test_data:
-    predictions.append(predict_classification(centroids, centroid_labels, data_point, 3, 2))
+    predictions.append(predict_classification(edited_dataset[:, :-1], edited_dataset[:, -1], data_point, k, p))
 
 print(np.mean(predictions == test_labels))
 
+predictions = []
+print("k-means")
+centroids, centroid_labels = k_means_cluster(train_data, train_labels, int(len(edited_dataset) ** (1/2)))
+for data_point in test_data:
+    predictions.append(predict_classification(centroids, centroid_labels, data_point, k, p))
 
-
-
+print(np.mean(predictions == test_labels))
 
 # SOY BEAN
 soy = SoyBeanSet()
@@ -55,7 +56,20 @@ data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
 soy_metrics, _, _, _, _ = cross_validate_classification(data_folds, label_folds, k, p)
 
 print("edited nearest neighbor")
-edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.1)
+predictions = []
+edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.5)
+for data_point in test_data:
+    predictions.append(predict_classification(edited_dataset[:, :-1], edited_dataset[:, -1], data_point, k, p))
+
+print(np.mean(predictions == test_labels))
+
+predictions = []
+print("k-means")
+centroids, centroid_labels = k_means_cluster(train_data, train_labels, int(len(edited_dataset) ** (1/2)))
+for data_point in test_data:
+    predictions.append(predict_classification(centroids, centroid_labels, data_point, k, p))
+
+print(np.mean(predictions == test_labels))
 
 # GLASS
 glass = GlassSet(7)
@@ -71,7 +85,20 @@ data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
 glass_metrics, _, _, _, _ = cross_validate_classification(data_folds, label_folds, k, p)
 
 print("edited nearest neighbor")
-edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.01)
+predictions = []
+edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.5)
+for data_point in test_data:
+    predictions.append(predict_classification(edited_dataset[:, :-1], edited_dataset[:, -1], data_point, k, p))
+
+print(np.mean(predictions == test_labels))
+
+predictions = []
+print("k-means")
+centroids, centroid_labels = k_means_cluster(train_data, train_labels, int(len(edited_dataset) ** (1/2)))
+for data_point in test_data:
+    predictions.append(predict_classification(centroids, centroid_labels, data_point, k, p))
+
+print(np.mean(predictions == test_labels))
 
 # ABALONE
 abalone = AbaloneSet()

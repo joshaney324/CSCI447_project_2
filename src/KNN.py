@@ -126,7 +126,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             total_diff += minkowski_metrics(centroid_ave, centroids[centroid_index], 2)
             # reassign the centroid position
             centroids[centroid_index] = centroid_ave
-        print(total_diff)
+        # print(total_diff)
     # assign each centroid its nearest neighbor's class
     centroid_labels = np.empty(train_labels.shape)
     for centroid_index in range(centroids.shape[0]):
