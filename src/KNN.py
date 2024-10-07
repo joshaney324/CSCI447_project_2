@@ -180,6 +180,7 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             for data_point in edited_dataset:
                 if not np.array_equal(data_point, removed_point):
                     remove_test_point_data.append(data_point)
+                    break
 
             # Convert to np array
             remove_test_point_data = np.array(remove_test_point_data)
@@ -249,11 +250,14 @@ def edited_nearest_neighbors_regression(train_data, train_labels, test_data, tes
             for data_point in edited_dataset:
                 if not np.array_equal(data_point, removed_point):
                     remove_test_point_data.append(data_point)
+                    break
 
         # Predict the label using the training set without the test instance
         for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
             if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
                 new_dataset.append(np.append(instance, label))
+
+
         new_dataset = np.array(new_dataset)
         for instance in test_data:
             predictions.append(predict_regression(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2, sigma))
