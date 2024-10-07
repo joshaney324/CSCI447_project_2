@@ -26,17 +26,19 @@ print("P: " + str(p) + "      K: " + str(k))
 data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
 breast_metrics, _, _, _, _ = cross_validate_classification(data_folds, label_folds, k, p)
 
+print("edited nearest neighbor")
+edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.1)
+
 predictions = []
 print("k-means")
-centroids, centroid_labels = k_means_cluster(train_data, train_labels, len(train_labels) ** (1/2))
+centroids, centroid_labels = k_means_cluster(train_data, train_labels, len(edited_dataset) ** (1/2))
 for data_point in test_data:
     predictions.append(predict_classification(centroids, centroid_labels, data_point, 3, 2))
 
 print(np.mean(predictions == test_labels))
 
 
-print("edited nearest neighbor")
-edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.1)
+
 
 
 # SOY BEAN

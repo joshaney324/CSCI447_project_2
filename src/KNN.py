@@ -177,10 +177,12 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             remove_test_point_data = []
 
             # Remove the data point from the train set
+            removed_point = False
             for data_point in edited_dataset:
-                if not np.array_equal(data_point, removed_point):
+                if not np.array_equal(data_point, removed_point) or removed_point:
                     remove_test_point_data.append(data_point)
-                    break
+                else:
+                    removed_point = True
 
             # Convert to np array
             remove_test_point_data = np.array(remove_test_point_data)
@@ -199,7 +201,6 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             predictions.append(predict_classification(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2))
 
         # Get a new performance
-        predictions = np.array(predictions)
         new_performance = np.mean(predictions == test_labels)
 
         # if the performance has been worse for the past 6 times break out and return the dataset e
@@ -210,6 +211,9 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             counter += 1
         # else set the new performance
         else:
+            if len(edited_dataset) == len(new_dataset):
+                break
+
             edited_dataset = new_dataset
             old_performance = new_performance
             counter = 0
@@ -251,13 +255,10 @@ def edited_nearest_neighbors_regression(train_data, train_labels, test_data, tes
             for data_point in edited_dataset:
                 if not np.array_equal(data_point, removed_point):
                     remove_test_point_data.append(data_point)
-                    break
 
             # Predict the label using the training set without the test instance
             if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
                 new_dataset.append(np.append(instance, label))
-
-
         new_dataset = np.array(new_dataset)
         for instance in test_data:
             predictions.append(predict_regression(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2, sigma))
