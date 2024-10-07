@@ -264,17 +264,17 @@ def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, 
 
             avg_val = (avg_accuracy + avg_precision + avg_recall) / 3
 
-            if avg_metric <= avg_val:
+            if avg_metric < avg_val:
                 avg_metric = avg_val
                 k = k_val
                 p = p_val
-                print("Best parameters so far")
-                print("Precision: " + str(avg_precision))
-                print("Recall: " + str(avg_recall))
-                print("Accuracy: " + str(avg_accuracy))
-                print("Average Metric: " + str(avg_val))
-                print("K: " + str(k))
-                print("P: " + str(p))
+                # print("Best parameters so far")
+                # print("Precision: " + str(avg_precision))
+                # print("Recall: " + str(avg_recall))
+                # print("Accuracy: " + str(avg_accuracy))
+                # print("Average Metric: " + str(avg_val))
+                # print("K: " + str(k))
+                # print("P: " + str(p))
 
     return k, p
 
