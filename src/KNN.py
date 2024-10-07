@@ -215,26 +215,42 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
 
 
 def edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, error, tolerance, sigma):
+    # Force a shape on train labels so you can concatenate
     if train_labels.ndim == 1:
         train_labels = train_labels.reshape(-1, 1)
+
+    # Concatenate data and labels
     edited_dataset = np.concatenate((train_data, train_labels), axis=1)
+
+    # Set tracker variables for performance
     new_performance = 1.0
     old_performance = 0.0
     improved = True
     counter = 0
 
     while improved:
+        # Create a new dataset to append all correct predictions to
         new_dataset = []
+
+        # Create predictions list
         predictions = []
+
+
         remove_test_point_data = []
 
+        # Test each data point in the dataset to see if it is predicted wrong
         for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
+
+            # Get the data point to remove for the training set
             removed_point = np.append(instance, label)
             remove_test_point_data = []
+
+            # Remove the data point from the train set
             for data_point in edited_dataset:
                 if not np.array_equal(data_point, removed_point):
                     remove_test_point_data.append(data_point)
 
+        # Predict the label using the training set without the test instance
         for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
             if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
                 new_dataset.append(np.append(instance, label))
