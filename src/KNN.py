@@ -169,31 +169,16 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
         # Create predictions list
         predictions = []
 
-        # Test each data point in the dataset to see if it is predicted wrong
-        for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
+        # add all the points that get predicted right
+        for i, data_point in enumerate(edited_dataset):
+            # remove the point we are currently looking at
+            removed_dataset = np.delete(edited_dataset, i, axis=0)
 
-            # Get the data point to remove for the training set
-            removed_point = np.append(instance, label)
-            remove_test_point_data = []
+            # check if it predicted correctly
+            if predict_classification(removed_dataset[:, :-1], removed_dataset[:, -1], data_point[:-1], 1, 2) == data_point[-1]:
+                new_dataset.append(data_point)
 
-            # Remove the data point from the train set
-            removed_point = False
-            for data_point in edited_dataset:
-                if not np.array_equal(data_point, removed_point) or removed_point:
-                    remove_test_point_data.append(data_point)
-                else:
-                    removed_point = True
-
-            # Convert to np array
-            remove_test_point_data = np.array(remove_test_point_data)
-
-            # Predict the label
-            # Use the train set without the test instance
-            # If the classifier gets it right add the point to the new dataset
-            if predict_classification(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2) == label:
-                new_dataset.append(np.append(instance, label))
-
-        # Convert the new dataset to an np array
+        # Convert to np array
         new_dataset = np.array(new_dataset)
 
         # Use the new dataset as the training data and test against the test set
@@ -211,9 +196,11 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
             counter += 1
         # else set the new performance
         else:
+            # If the dataset did not change break and return the dataset
             if len(edited_dataset) == len(new_dataset):
                 break
 
+            # Update edited dataset and performance, reset counter
             edited_dataset = new_dataset
             old_performance = new_performance
             counter = 0
@@ -266,11 +253,16 @@ def edited_nearest_neighbors_regression(train_data, train_labels, test_data, tes
         predictions = np.array(predictions)
         new_performance = mean_squared_error(predictions, test_labels, len(predictions))
 
-        if new_performance - old_performance < tolerance and counter > 6:
+        if counter > 6:
             improved = False
-        elif new_performance - old_performance < tolerance and counter < 6:
+        # if the counter has not gotten to 6 but the performance was worse increase the counter
+        elif old_performance - new_performance > tolerance and counter < 6:
             counter += 1
+        # else set the new performance
         else:
+            if len(edited_dataset) == len(new_dataset):
+                break
+
             edited_dataset = new_dataset
             old_performance = new_performance
             counter = 0
