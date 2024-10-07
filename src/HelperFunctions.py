@@ -1,7 +1,77 @@
-import math
 from Metric_functions import precision, recall, accuracy, mean_squared_error
 import numpy as np
-from KNN import predict_regression, predict_classification
+from KNN import (predict_regression, predict_classification, edited_nearest_neighbors_classification,
+                 edited_nearest_neighbors_regression, k_means_cluster)
+from Fold_functions import get_folds_classification, get_folds_regression, get_tune_folds
+from HyperparameterTune import hyperparameter_tune_knn_classification, hyperparameter_tune_knn_regression
+
+
+def test_classification_dataset(dataset):
+    data_folds, label_folds = get_folds_classification(dataset.get_data(), dataset.get_labels(), 10)
+    test_data, test_labels, train_data, train_labels = get_tune_folds(data_folds, label_folds)
+    k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
+    p_vals = [1, 2, 3, 4]
+    k, p = hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals)
+    print("Optimal hyperparameters")
+    print("P: " + str(p) + "      K: " + str(k))
+    data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
+    cross_validate_classification(data_folds, label_folds, k, p)
+
+    print("edited nearest neighbor")
+    predictions = []
+    edited_dataset = edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, 0.5)
+    for data_point in test_data:
+        predictions.append(predict_classification(edited_dataset[:, :-1], edited_dataset[:, -1], data_point, k, p))
+
+    print(np.mean(predictions == test_labels))
+
+    predictions = []
+    print("k-means")
+    centroids, centroid_labels = k_means_cluster(train_data, train_labels, int(len(edited_dataset)))
+
+    # Print out centroids to see if they converged on each other
+    # for centroid in centroids:
+    #     print(centroid)
+
+    for data_point in test_data:
+        predictions.append(predict_classification(centroids, centroid_labels, data_point, k, p))
+
+    print(np.mean(predictions == test_labels))
+
+
+def test_regression_dataset(dataset):
+    data_folds, label_folds = get_folds_regression(dataset.get_data(), dataset.get_labels(), 10)
+    test_data, test_labels, train_data, train_labels = get_tune_folds(data_folds, label_folds)
+    k_vals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
+    p_vals = [1, 2]
+    sigma_vals = [.05, .5, 1, 1.5, 2, 3, 4, 5]
+    k, p, sigma = hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals,
+                                                     sigma_vals)
+    print("Optimal hyperparameters")
+    print("P: " + str(p) + "      K: " + str(k) + "      Sigma: " + str(sigma))
+    data_folds, label_folds = get_folds_regression(train_data, train_labels, 10)
+    cross_validate_regression(data_folds, label_folds, k, p, sigma)
+
+    print("edited nearest neighbor")
+    predictions = []
+    edited_dataset = edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, 1, 0.5, sigma)
+    for data_point in test_data:
+        predictions.append(predict_regression(edited_dataset[:, :-1], edited_dataset[:, -1], data_point, k, p, sigma))
+
+    print(mean_squared_error(predictions, test_labels, len(predictions)))
+
+    predictions = []
+    print("k-means")
+    centroids, centroid_labels = k_means_cluster(train_data, train_labels, int(len(edited_dataset)))
+
+    # Print out centroids to see if they converged on each other
+    # for centroid in centroids:
+    #     print(centroid)
+
+    for data_point in test_data:
+        predictions.append(predict_regression(centroids, centroid_labels, data_point, k, p, sigma))
+
+    print(mean_squared_error(predictions, test_labels, len(predictions)))
 
 
 def binary_encoding(data, indices):
@@ -147,176 +217,4 @@ def cross_validate_regression(data_folds, label_folds, k_nearest_neighbors, p, s
     return mean_squared_error_avg / folds
 
 
-def get_folds_classification(data, labels, num_folds):
 
-    # the get_folds function is meant to split the data up into a specified number of folds. this function takes in a
-    # Dataset object as well as a specified number of folds. it then returns a list of all the data folds and label
-    # folds
-
-
-
-    # determine the number of instances of each class in each fold,
-    # storing the values in a 2d numpy array (each row is a fold, each column is a class)
-    classes, num_instances = np.unique(labels, return_counts=True)
-    num_instances_perfold = np.zeros((num_folds, len(classes)), int)
-    for i in range(len(num_instances_perfold[0])):
-        for j in range(len(num_instances_perfold)):
-            num_instances_perfold[j,i] = num_instances[i] // num_folds
-        num_extra = num_instances[i] % num_folds
-        for k in range(num_extra):
-            num_instances_perfold[k,i] += 1
-
-    # declare two lists of np arrays, each list entry representing a fold,
-    # one list with data and one with labels
-    label_folds = []
-    for i in range(num_folds):
-        label_folds.append(np.empty(shape=0))
-    data_folds = []
-    for i in range(num_folds):
-        data_folds.append(np.empty(shape=(0, len(data[0]))))
-
-    # iterate down the columns (classes) in the num_instances_perfold array,
-    # then across the rows (folds) in the array,
-    # then get the number of instances of that class in that fold,
-    # then iterate through the labels to add them,
-    # and remove the instances added to that fold from the data/labels classes to ensure uniqueness
-    for i in range(len(num_instances_perfold[:,0])):
-        for j in range(len(num_instances_perfold[i])):
-            num_instances_infold = num_instances_perfold[i,j]
-            k = 0
-            while k < len(labels):
-                if classes[j] == labels[k]:
-                    label_folds[i] = np.append(label_folds[i], labels[k])
-                    data_folds[i] = np.vstack((data_folds[i], data[k]))
-                    data = np.delete(data, k, 0)
-                    labels = np.delete(labels, k)
-                    num_instances_infold -= 1
-                    k -= 1
-                if num_instances_infold == 0:
-                    break
-                k += 1
-    # return a tuple of data_folds, label_folds
-    return data_folds, label_folds
-
-
-def get_folds_regression(data, labels, num_folds):
-
-    # Turn the data and labels into np arrays
-    data = np.array(data)
-    labels = np.array(labels)
-
-    # Make sure it's the right shape
-    if labels.ndim == 1:
-        labels = labels.reshape(-1, 1)
-
-    # Concatenate
-    dataset = np.concatenate((data, labels), axis=1)
-
-    # get a list of sorted indices and put the dataset into the correct order
-    sorted_indices = np.argsort(dataset[:, -1])
-    dataset = dataset[sorted_indices, :]
-
-    # get groups of 10 consecutive data points and append it to the list of groups
-    datapoint_groups = []
-    for i in range(0, len(dataset), 10):
-        group = dataset[i:i + 10]
-        datapoint_groups.append(group)
-
-    # Create 10 empty folds
-    folds = [[] for _ in range(num_folds)]
-
-    # for every group in datapoint_groups take a particular group and put each value from the specific group into the
-    # specified folds
-    for i, group in enumerate(datapoint_groups):
-        for j, row in enumerate(group):
-            fold_index = (j + i) % num_folds
-            folds[fold_index].append(row)
-
-    # make all folds np arrays
-    folds = [np.array(fold) for fold in folds]
-    data_folds = []
-    label_folds = []
-
-    # Create fold variables for labels and data
-    for fold in folds:
-        data_folds.append(fold[:, :-1])
-        label_folds.append(fold[:, -1])
-
-    return data_folds, label_folds
-
-
-def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
-    avg_metric = 0.0
-    k = None
-    p = None
-    for p_val in p_vals:
-        for k_val in k_vals:
-            predictions = []
-            for test_point in test_data:
-                predictions.append(predict_classification(train_data, train_labels, test_point, k_val, p_val))
-            precisions = precision(predictions, test_labels)
-            recalls = recall(predictions, test_labels)
-            accuracies, matrix = accuracy(predictions, test_labels)
-
-            avg_precision = sum(precision_vals for _, precision_vals in precisions) / len(precisions)
-            avg_recall = sum(recall_vals for _, recall_vals in recalls) / len(recalls)
-            avg_accuracy = sum(accuracy_vals for _, accuracy_vals in accuracies) / len(accuracies)
-
-            avg_val = (avg_accuracy + avg_precision + avg_recall) / 3
-
-            if avg_metric < avg_val:
-                avg_metric = avg_val
-                k = k_val
-                p = p_val
-                # print("Best parameters so far")
-                # print("Precision: " + str(avg_precision))
-                # print("Recall: " + str(avg_recall))
-                # print("Accuracy: " + str(avg_accuracy))
-                # print("Average Metric: " + str(avg_val))
-                # print("K: " + str(k))
-                # print("P: " + str(p))
-
-    return k, p
-
-
-def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals, sigma_vals):
-    min_mean_squared_error = math.inf
-    k = None
-    p = None
-    sigma = None
-    for p_val in p_vals:
-        for k_val in k_vals:
-            for sigma_val in sigma_vals:
-                predictions = []
-                try:
-                    for test_point in test_data:
-                        predictions.append(predict_regression(train_data, train_labels, test_point, k_val, p_val, sigma_val))
-                    predictions = np.array(predictions)
-                    mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
-                    if mean_squared_val < min_mean_squared_error:
-                        min_mean_squared_error = mean_squared_val
-                        k = k_val
-                        p = p_val
-                        sigma = sigma_val
-                        print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
-                        print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
-                except ZeroDivisionError:
-                    print("ZeroDivisionError")
-
-    return k, p, sigma
-
-
-def get_tune_folds(data_folds, label_folds):
-    test_data = np.array(data_folds[-1])
-    test_labels = np.array(label_folds[-1])
-    train_data = []
-    train_labels = []
-    for j in range(len(data_folds) - 1):
-        for instance, label in zip(data_folds[j], label_folds[j]):
-            train_data.append(instance)
-            train_labels.append(label)
-
-    train_data = np.array(train_data)
-    train_labels = np.array(train_labels)
-
-    return test_data, test_labels, train_data, train_labels

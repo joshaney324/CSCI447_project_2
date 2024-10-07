@@ -1,0 +1,65 @@
+import numpy as np
+
+from KNN import predict_regression, predict_classification
+from Metric_functions import precision, recall, accuracy, mean_squared_error
+import math as math
+
+
+def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
+    avg_metric = 0.0
+    k = None
+    p = None
+    for p_val in p_vals:
+        for k_val in k_vals:
+            predictions = []
+            for test_point in test_data:
+                predictions.append(predict_classification(train_data, train_labels, test_point, k_val, p_val))
+            precisions = precision(predictions, test_labels)
+            recalls = recall(predictions, test_labels)
+            accuracies, matrix = accuracy(predictions, test_labels)
+
+            avg_precision = sum(precision_vals for _, precision_vals in precisions) / len(precisions)
+            avg_recall = sum(recall_vals for _, recall_vals in recalls) / len(recalls)
+            avg_accuracy = sum(accuracy_vals for _, accuracy_vals in accuracies) / len(accuracies)
+
+            avg_val = (avg_accuracy + avg_precision + avg_recall) / 3
+
+            if avg_metric < avg_val:
+                avg_metric = avg_val
+                k = k_val
+                p = p_val
+                # print("Best parameters so far")
+                # print("Precision: " + str(avg_precision))
+                # print("Recall: " + str(avg_recall))
+                # print("Accuracy: " + str(avg_accuracy))
+                # print("Average Metric: " + str(avg_val))
+                # print("K: " + str(k))
+                # print("P: " + str(p))
+
+    return k, p
+
+
+def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, k_vals, p_vals, sigma_vals):
+    min_mean_squared_error = math.inf
+    k = None
+    p = None
+    sigma = None
+    for p_val in p_vals:
+        for k_val in k_vals:
+            for sigma_val in sigma_vals:
+                predictions = []
+                for test_point in test_data:
+                    predictions.append(predict_regression(train_data, train_labels, test_point, k_val, p_val, sigma_val))
+
+                predictions = np.array(predictions)
+                mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
+                if mean_squared_val < min_mean_squared_error:
+                    min_mean_squared_error = mean_squared_val
+                    k = k_val
+                    p = p_val
+                    sigma = sigma_val
+                    print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
+                    print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
+
+    return k, p, sigma
+

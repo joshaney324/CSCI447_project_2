@@ -228,43 +228,40 @@ def edited_nearest_neighbors_regression(train_data, train_labels, test_data, tes
         # Create predictions list
         predictions = []
 
+        # add all the points that get predicted right
+        for i, data_point in enumerate(edited_dataset):
+            # remove the point we are currently looking at
+            removed_dataset = np.delete(edited_dataset, i, axis=0)
 
-        remove_test_point_data = []
+            # check if it predicted correctly
+            if abs(predict_regression(removed_dataset[:, :-1], removed_dataset[:, -1], data_point[:-1], 1, 2, sigma) - data_point[-1]) <= error:
+                new_dataset.append(data_point)
 
-        # Test each data point in the dataset to see if it is predicted wrong
-        for instance, label in zip(edited_dataset[:, :-1], edited_dataset[:, -1]):
-
-            # Get the data point to remove for the training set
-            removed_point = np.append(instance, label)
-            remove_test_point_data = []
-
-            # Remove the data point from the train set
-            for data_point in edited_dataset:
-                if not np.array_equal(data_point, removed_point):
-                    remove_test_point_data.append(data_point)
-
-            # Predict the label using the training set without the test instance
-            if abs(predict_regression(remove_test_point_data[:, :-1], remove_test_point_data[:, -1], instance, 2, 2, sigma) - label) <= error:
-                new_dataset.append(np.append(instance, label))
+        # Convert to np array
         new_dataset = np.array(new_dataset)
+
+        # Use the new dataset as the training data and test against the test set
         for instance in test_data:
             predictions.append(predict_regression(new_dataset[:, :-1], new_dataset[:, -1], instance, 1, 2, sigma))
 
-        predictions = np.array(predictions)
+        # Get a new performance
         new_performance = mean_squared_error(predictions, test_labels, len(predictions))
 
+        # if the performance has been worse for the past 6 times break out and return the dataset e
         if counter > 6:
             improved = False
         # if the counter has not gotten to 6 but the performance was worse increase the counter
-        elif old_performance - new_performance > tolerance and counter < 6:
+        elif old_performance < new_performance and counter < 6:
             counter += 1
         # else set the new performance
         else:
+            # If the dataset did not change break and return the dataset
             if len(edited_dataset) == len(new_dataset):
                 break
 
+            # Update edited dataset and performance, reset counter
             edited_dataset = new_dataset
             old_performance = new_performance
             counter = 0
-
     return edited_dataset
+
