@@ -1,7 +1,3 @@
-import math
-
-import numpy as np
-
 from BreastCancerSet import BreastCancerSet
 from SoyBeanSet import SoyBeanSet
 from GlassSet import GlassSet
@@ -22,7 +18,7 @@ test_classification_dataset(soy)
 
 # GLASS
 print("Glass")
-glass = GlassSet(2)
+glass = GlassSet(7)
 test_classification_dataset(glass)
 
 # ABALONE
