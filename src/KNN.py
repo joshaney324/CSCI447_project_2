@@ -2,7 +2,7 @@ import math
 import sys
 from random import random
 
-from Metric_functions import minkowski_metrics, rbf_kernel, mean_squared_error
+from Metric_functions import minkowski_metrics, rbf_kernel, mean_squared_error, forest_distance
 import numpy as np
 
 
@@ -64,9 +64,36 @@ def predict_regression(train_data, train_labels, test_point, k_neighbors, p, sig
 
     # get the weighted average by multiplying the weights by the distances and divided it by the sum of the weights
     weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
-    # if math.isnan(weighted_average):
-    #     return 0
-    # weighted_average = np.sum(k_nearest_distances[:, 1] * k_nearest_distances[:, 0]) / np.sum(k_nearest_distances[:, 1])
+
+    # return the weighted average
+    return weighted_average
+
+
+def predict_regression_forest(train_data, train_labels, test_point, k_neighbors, p, sigma):
+    # get the distances and values from the forest_distance() function
+    distances = []
+
+    # append a list to the list of distances which contains the label and then the distance
+    for datapoint, label in zip(train_data, train_labels):
+        distances.append((label, forest_distance(datapoint, test_point, p)))
+
+    # sort the distances and return them
+    distances.sort(key=lambda x: x[1])
+
+    # get k nearest distances
+    k_nearest_distances = distances[:k_neighbors]
+
+    # get the weights for all the k nearest distances by using the rbf_kernel() function
+    weights = []
+    for i in range(len(k_nearest_distances)):
+        weights.append(rbf_kernel(k_nearest_distances[i][1], sigma))
+
+    # convert the weights and k_nearest_distances lists into np arrays
+    weights = np.array(weights)
+    k_nearest_distances = np.array(k_nearest_distances)
+
+    # get the weighted average by multiplying the weights by the distances and divided it by the sum of the weights
+    weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
 
     # return the weighted average
     return weighted_average

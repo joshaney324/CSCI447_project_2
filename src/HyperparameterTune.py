@@ -1,10 +1,8 @@
 import numpy as np
 
-from KNN import predict_regression, predict_classification
+from KNN import predict_regression, predict_classification, edited_nearest_neighbors_regression, predict_regression_forest
 from Metric_functions import precision, recall, accuracy, mean_squared_error
 import math as math
-
-from src.KNN import edited_nearest_neighbors_regression
 
 
 def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, test_labels, k_vals, p_vals):
@@ -41,7 +39,7 @@ def hyperparameter_tune_knn_classification(train_data, train_labels, test_data, 
     return k, p
 
 
-def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, sigma_vals, k_vals, p_vals):
+def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test_labels, sigma_vals, k_vals, p_vals, forest):
     mean_squared_errors = [len(sigma_vals)][len(k_vals)][len(p_vals)]
     min_mean_squared_error = (0, 0, 0)
     k = None
@@ -52,7 +50,10 @@ def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test
             for k_val_index in range(len(k_vals)):
                 predictions = []
                 for test_point in test_data:
-                    predictions.append(predict_regression(train_data, train_labels, test_point, k_vals[k_val_index], p_vals[p_val_index], sigma_vals[sigma_val_index]))
+                    if not forest:
+                        predictions.append(predict_regression(train_data, train_labels, test_point, k_vals[k_val_index], p_vals[p_val_index], sigma_vals[sigma_val_index]))
+                    else:
+                        predictions.append(predict_regression_forest(train_data, train_labels, test_point, k_vals[k_val_index], p_vals[p_val_index], sigma_vals[sigma_val_index]))
 
                 predictions = np.array(predictions)
                 #mean_squared_val = mean_squared_error(test_labels, predictions, len(predictions))
@@ -65,6 +66,7 @@ def hyperparameter_tune_knn_regression(train_data, train_labels, test_data, test
                 #    print("Current Minimum Mean Squared Error: " + str(mean_squared_val))
                 #    print("K: " + str(k) + "        P: " + str(p) + "        sigma: " + str(sigma))
     return mean_squared_errors
+
 
 def hyperparameter_tune_edited_regression(train_data, train_labels, test_data, test_labels, threshold_vals, sigma_vals,  p_vals, k_vals, tolerance):
     mean_squared_errors = [len(threshold_vals)][len(sigma_vals)][len(p_vals)][len(k_vals)]

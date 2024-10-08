@@ -9,6 +9,36 @@ def minkowski_metrics(initial_point, target_point, p):
     return total ** (1/p)
 
 
+def forest_distance(initial_point, target_point, p):
+
+    month_vals = {0: "jan", 1: "feb", 2: "mar", 3: "apr", 4: "may", 5: "jun", 6: "jul", 7: "aug", 8: "sep", 9: "oct",
+                  10: "nov", 11: "dec"}
+    weekday_vals = {0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat"}
+
+    non_categorical_init = np.delete(initial_point, [2, 3])
+    non_categorical_target = np.delete(target_point, [2, 3])
+
+
+    non_categorical_total = 0
+    for i in range(len(non_categorical_init)):
+        non_categorical_total += abs(non_categorical_target[i] - non_categorical_init[i]) ** p
+
+    # Cyclic distance for months (mod 12)
+    month_init = month_vals[initial_point[2]]
+    month_target = month_vals[target_point[2]]
+    month_distance = min(abs(month_init - month_target), 12 - abs(month_init - month_target)) ** p
+
+    # Cyclic distance for weekdays (mod 7)
+    weekday_init = weekday_vals[initial_point[3]]
+    weekday_target = weekday_vals[target_point[3]]
+    weekday_distance = min(abs(weekday_init - weekday_target), 7 - abs(weekday_init - weekday_target)) ** p
+
+    # Total distance is the sum of non-categorical and categorical components
+    total_distance = non_categorical_total + month_distance + weekday_distance
+
+    return total_distance ** (1 / p)
+
+
 def rbf_kernel(distance, sigma):
     return np.exp(- (distance ** 2) / (2 * sigma ** 2))
 

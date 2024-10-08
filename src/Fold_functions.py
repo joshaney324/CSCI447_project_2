@@ -62,13 +62,12 @@ def get_folds_regression(data, labels, num_folds):
 
     return data_folds, label_folds
 
+
 def get_folds_classification(data, labels, num_folds):
 
     # the get_folds function is meant to split the data up into a specified number of folds. this function takes in a
     # Dataset object as well as a specified number of folds. it then returns a list of all the data folds and label
     # folds
-
-
 
     # determine the number of instances of each class in each fold,
     # storing the values in a 2d numpy array (each row is a fold, each column is a class)
