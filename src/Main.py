@@ -21,11 +21,6 @@ print("Glass")
 glass = GlassSet(7)
 test_classification_dataset(glass)
 
-# ABALONE
-print("Abalone")
-abalone = AbaloneSet()
-test_regression_dataset(abalone)
-
 # FOREST FIRES
 print("Forest")
 forest = ForestFiresSet()
@@ -35,3 +30,9 @@ test_regression_dataset(forest)
 print("Hardware")
 machine = MachineSet()
 test_regression_dataset(machine)
+
+# ABALONE
+print("Abalone")
+abalone = AbaloneSet()
+test_regression_dataset(abalone)
+

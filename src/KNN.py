@@ -2,7 +2,7 @@ import math
 import sys
 from random import random
 
-from Metric_functions import minkowski_metrics, rbf_kernel, mean_squared_error, forest_distance
+from Metric_functions import minkowski_metrics, rbf_kernel, mean_squared_error
 import numpy as np
 
 
@@ -64,36 +64,9 @@ def predict_regression(train_data, train_labels, test_point, k_neighbors, p, sig
 
     # get the weighted average by multiplying the weights by the distances and divided it by the sum of the weights
     weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
-
-    # return the weighted average
-    return weighted_average
-
-
-def predict_regression_forest(train_data, train_labels, test_point, k_neighbors, p, sigma):
-    # get the distances and values from the forest_distance() function
-    distances = []
-
-    # append a list to the list of distances which contains the label and then the distance
-    for datapoint, label in zip(train_data, train_labels):
-        distances.append((label, forest_distance(datapoint, test_point, p)))
-
-    # sort the distances and return them
-    distances.sort(key=lambda x: x[1])
-
-    # get k nearest distances
-    k_nearest_distances = distances[:k_neighbors]
-
-    # get the weights for all the k nearest distances by using the rbf_kernel() function
-    weights = []
-    for i in range(len(k_nearest_distances)):
-        weights.append(rbf_kernel(k_nearest_distances[i][1], sigma))
-
-    # convert the weights and k_nearest_distances lists into np arrays
-    weights = np.array(weights)
-    k_nearest_distances = np.array(k_nearest_distances)
-
-    # get the weighted average by multiplying the weights by the distances and divided it by the sum of the weights
-    weighted_average = np.sum(weights * k_nearest_distances[:, 0]) / (np.sum(weights))
+    # if math.isnan(weighted_average):
+    #     return 0
+    # weighted_average = np.sum(k_nearest_distances[:, 1] * k_nearest_distances[:, 0]) / np.sum(k_nearest_distances[:, 1])
 
     # return the weighted average
     return weighted_average
@@ -107,7 +80,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
     num_features = train_data.shape[1]
     centroids = np.empty((int(num_clusters), num_features))
     # generate starter values for each of the features between the minimum and maximum values for that feature
-    for feature_index in range(centroids.shape[1]):
+    for feature_index in range(num_features):
         max_val = np.max(train_data[:, feature_index])
         min_val = np.min(train_data[:, feature_index])
         for centroid_index in range(centroids.shape[0]):
@@ -121,7 +94,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
         # reset total distance to zero
         total_diff = 0
         # create an array to store the centroid assignments of different entries
-        centroid_assignments = np.empty(train_data.shape[0])
+        centroid_assignments = np.zeros(train_data.shape[0], dtype=float)
         # store the centroid assignment of the current entry
         centroid_assignment = 0
         # assign all entries to their closest centroid
@@ -162,7 +135,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
             if minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2) < min_distance:
                 centroid_labels[centroid_index] = train_labels[entry_index]
                 min_distance = minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2)
-    return centroids, centroid_labels
+    return centroids, centroid_labels[:len(centroids)]
 
 
 # def clustered_classification(train_data, train_labels, test_point, num_neighbors, p, num_clusters):
@@ -175,7 +148,7 @@ def k_means_cluster(train_data, train_labels, num_clusters):
 #     return predict_regression(centroids, centroid_labels, test_point, num_neighbors, p, sigma)
 
 
-def edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels, tolerance):
+def edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels):
     # Force a shape on train labels so you can concatenate
     if train_labels.ndim == 1:
         train_labels = train_labels.reshape(-1, 1)
@@ -219,7 +192,7 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
         if counter > 6:
             improved = False
         # if the counter has not gotten to 6 but the performance was worse increase the counter
-        elif old_performance - new_performance > tolerance and counter < 6:
+        elif old_performance - new_performance > 0 and counter < 6:
             counter += 1
         # else set the new performance
         else:
@@ -234,7 +207,7 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
     return edited_dataset
 
 
-def edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, error, tolerance, sigma):
+def edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, error, sigma):
     # Force a shape on train labels so you can concatenate
     if train_labels.ndim == 1:
         train_labels = train_labels.reshape(-1, 1)

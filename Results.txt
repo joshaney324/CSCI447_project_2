@@ -1,0 +1,91 @@
+
+Breast Cancer
+Optimal hyperparameters
+P: 1      K: 3
+Metrics: [0.9707078440743396, 0.9665151515151515, 0.970729772607086]
+
+edited nearest neighbor
+Metrics
+[0.9925609756097561, 0.9847368421052632, 0.9897720631209819]
+
+k-means
+Metrics
+[0.8414568923498675, 0.7257032467881526, 0.9232028053769726]
+
+Soy Bean
+Optimal hyperparameters
+P: 1      K: 2
+Metrics: [1.0, 1.0, 1.0]
+
+edited nearest neighbor
+Metrics
+[1.0, 1.0, 1.0]
+
+k-means
+Metrics
+[0.6375, 0.525, 0.7341666666666666]
+
+Glass
+
+Optimal hyperparameters
+P: 1      K: 8
+
+Metrics: [0.6755352286602286, 0.5586011904761905, 0.8463201754385965]
+
+edited nearest neighbor
+Metrics
+[0.9080555555555556, 0.8125, 0.937838272838273]
+
+k-means
+Metrics
+[0.5610416666666668, 0.33361111111111114, 0.8012286324786325]
+
+Abalone
+
+Optimal hyperparameters
+P: 2      K: 15      Sigma: 0.05
+
+Mean Squared Error: 4.874645153112986
+
+edited nearest neighbor
+
+k-means
+
+Mean Squared Error
+13.393047118542535
+
+Forest
+
+Optimal hyperparameters
+P: 1      K: 15      Sigma: 3
+
+Mean Squared Error: 4729.6840543099515
+
+edited nearest neighbor
+
+Mean Squared Error
+12.30260523547173
+
+k-means
+
+Mean Squared Error
+1362.4556011255668
+
+Hardware
+
+Optimal hyperparameters
+P: 1      K: 9      Sigma: 0.5
+
+Mean Squared Error: 3618.2288932532706
+
+edited nearest neighbor
+
+Mean Squared Error
+42.45886972055434
+
+k-means
+
+Mean Squared Error
+48377.12754447987
+
+Process finished with exit code 0
