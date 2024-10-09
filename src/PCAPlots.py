@@ -15,7 +15,8 @@ principal_components = pca.fit_transform(data)
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(principal_components[:, 0], principal_components[:, 1], c=labels, cmap='viridis')
 
-plt.colorbar(scatter, label='Label')
+plt.colorbar(scatter, label='Class')
+
 
 plt.tight_layout()
 plt.show()

@@ -43,6 +43,7 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/BreastCancerBarPlot.png')
 plt.show()
 
 # Soy
@@ -74,6 +75,7 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/SoyBarPlot.png')
 plt.show()
 
 # Glass
@@ -106,6 +108,7 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/GlassBarPlot.png')
 plt.show()
 
 ###################################################### REGRESSION ###################################################
@@ -129,7 +132,7 @@ ENN = sub.bar(locations, edited_nearest_neighbor, width, label='Edited Nearest N
 KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighbor Classification Centroids from K-Means Clustering')
 
 sub.set_xlabel('Metrics')
-sub.set_title('Mean Squared Error From Different Models on Breast Cancer Dataset')
+sub.set_title('Mean Squared Error From Different Models on Abalone Dataset')
 sub.set_xticks(locations)
 sub.set_xticklabels(labels)
 
@@ -142,6 +145,7 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/AbaloneBarPlot.png')
 plt.show()
 
 # Hardware
@@ -174,6 +178,7 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/HardwareBarPlot.png')
 plt.show()
 
 # Forest
@@ -206,4 +211,5 @@ add_labels(ENN, sub)
 add_labels(KNN_K_means, sub)
 
 plt.tight_layout()
+plt.savefig('C:/Users/josh.aney/OneDrive/Documents/CSCI447/ML_project2/plots/ForestBarPlot.png')
 plt.show()
