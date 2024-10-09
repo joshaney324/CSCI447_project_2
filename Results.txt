@@ -43,6 +43,7 @@ k-means
 Mean Squared Error
 4627.8231035897425
 
+Forest
 Optimal hyperparameters
 P: 2      K: 10      Sigma: 5
 Mean Squared Error: 5283.0001691368425

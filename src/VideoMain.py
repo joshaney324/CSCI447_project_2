@@ -9,12 +9,12 @@ from CrossValidateFunctions import (cross_validate_edited_regression, cross_vali
                                     cross_validate_edited_classification, cross_validate_classification)
 import numpy as np
 
-abalone = ForestFiresSet()
+abalone = AbaloneSet()
 data = abalone.get_data()
 labels = abalone.get_labels()
 
 # Split the data into 40 stratified folds and use 1 as smaller dataset
-data_folds, label_folds = get_folds_regression(data, labels, 4)
+data_folds, label_folds = get_folds_regression(data, labels, 40)
 
 small_abalone_data = np.array(data_folds[0])
 small_abalone_labels = np.array(label_folds[0])
