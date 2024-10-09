@@ -1,12 +1,8 @@
-from KNN import edited_nearest_neighbors_regression
-from Fold_functions import get_folds_classification, get_folds_regression
-from CrossValidateFunctions import (cross_validate_tune_classification, cross_validate_tune_regression,
-                                    cross_validate_regression)
 import math as math
 
 
 def hyperparameter_tune_knn_classification(data_folds, label_folds, test_data, test_labels, k_vals, p_vals):
-
+    from CrossValidateFunctions import (cross_validate_tune_classification)
     # set up best value variables
     avg_metric = 0.0
     k = None
@@ -29,7 +25,7 @@ def hyperparameter_tune_knn_classification(data_folds, label_folds, test_data, t
 
 
 def hyperparameter_tune_knn_regression(data_folds, label_folds, test_data, test_labels, k_vals, p_vals, sigma_vals):
-
+    from CrossValidateFunctions import (cross_validate_tune_regression)
     # Set up best value variables
     min_mean_squared_error = math.inf
     k = None
@@ -56,8 +52,8 @@ def hyperparameter_tune_knn_regression(data_folds, label_folds, test_data, test_
     return k, p, sigma
 
 
-def hyperparameter_tune_edited_regression(train_data, train_labels, test_data, test_labels, threshold_vals, sigma_vals):
-
+def hyperparameter_tune_edited_regression(data_folds, label_folds, tune_data, tune_labels, threshold_vals, sigma_vals):
+    from CrossValidateFunctions import cross_validate_edited_regression
     # Set up best value variabes
     error = None
     sigma = None
@@ -69,18 +65,8 @@ def hyperparameter_tune_edited_regression(train_data, train_labels, test_data, t
             # Sometimes with small error vals there are not enough datapoints to regress
             try:
 
-                # get an edited dataset based off the error value and sigma value
-                edited_dataset = edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, threshold_vals[threshold_val_index], sigma_vals[sigma_val_index])
-
-                # Seperate data and labels
-                edited_data = edited_dataset[:, :-1]
-                edited_labels = edited_dataset[:, -1]
-
-                # get folds off of the data and labels
-                data_folds, label_folds = get_folds_regression(edited_data, edited_labels, 10)
-
                 # Get the mean squared error value based off of the error and sigma value
-                mean_squared_val = cross_validate_regression(data_folds, label_folds, 1, 2, sigma_vals[sigma_val_index])
+                mean_squared_val = cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_labels, sigma_vals[sigma_val_index], threshold_vals[threshold_val_index])
 
                 # If the model performed better update the best value variables
                 if mean_squared_val < min_mean_squared_error:
