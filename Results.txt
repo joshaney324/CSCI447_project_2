@@ -31,3 +31,35 @@ Metrics
 k-means
 Metrics
 [0.6343482905982906, 0.4626984126984127, 0.7756601731601732]
+
+Hardware
+Optimal hyperparameters
+P: 1      K: 10      Sigma: 0.5
+Mean Squared Error: 3728.5419498900687
+edited nearest neighbor
+Mean Squared Error
+31827.131010909234
+k-means
+Mean Squared Error
+4627.8231035897425
+
+Optimal hyperparameters
+P: 2      K: 10      Sigma: 5
+Mean Squared Error: 5283.0001691368425
+edited nearest neighbor
+Mean Squared Error
+4906.770218163989
+k-means
+Mean Squared Error
+4814.371607523724
+
+Abalone
+Optimal hyperparameters
+P: 2      K: 3      Sigma: 0.5
+Mean Squared Error: 6.589548401155328
+edited nearest neighbor
+Mean Squared Error
+6.212742680907067
+k-means
+Mean Squared Error
+8.334849126492824

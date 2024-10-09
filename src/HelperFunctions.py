@@ -11,8 +11,8 @@ def test_classification_dataset(dataset, num_clusters):
     tune_data, tune_labels, train_data, train_labels = get_tune_folds(data_folds, label_folds)
 
     # Set up hyper parameter range
-    k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
-    p_vals = [1, 2, 3, 4]
+    k_vals = [2, 3, 4, 5, 10, 15]
+    p_vals = [1, 2]
 
     # Tune the hyperparameters
     data_folds, label_folds = get_folds_classification(train_data, train_labels, 10)
@@ -41,26 +41,26 @@ def test_regression_dataset(dataset, num_clusters):
     tune_data, tune_labels, train_data, train_labels = get_tune_folds(data_folds, label_folds)
 
     # Set up hyperparameter values
-    k_vals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
+    k_vals = [1, 2, 3, 4, 5, 10, 15]
     p_vals = [1, 2]
-    sigma_vals = [.05, .5, 1, 1.5, 2, 3, 4, 5]
+    sigma_vals = [.05, .5, 1, 1.5, 2, 5]
 
     # Tune the values based off of the raw data
     data_folds, label_folds = get_folds_regression(train_data, train_labels, 10)
-    # k, p, sigma = hyperparameter_tune_knn_regression(data_folds, label_folds, tune_data, tune_labels, k_vals, p_vals,
-    #                                                  sigma_vals)
-    #
-    # # Print the optimal parameters
-    # print("Optimal hyperparameters")
-    # print("P: " + str(p) + "      K: " + str(k) + "      Sigma: " + str(sigma))
-    #
-    # # Evaluate the model
-    # print("Mean Squared Error: " + str(cross_validate_regression(data_folds, label_folds, k, p, sigma)))
+    k, p, sigma = hyperparameter_tune_knn_regression(data_folds, label_folds, tune_data, tune_labels, k_vals, p_vals,
+                                                     sigma_vals)
+
+    # Print the optimal parameters
+    print("Optimal hyperparameters")
+    print("P: " + str(p) + "      K: " + str(k) + "      Sigma: " + str(sigma))
+
+    # Evaluate the model
+    print("Mean Squared Error: " + str(cross_validate_regression(data_folds, label_folds, k, p, sigma)))
 
     # Get edited dataset
     print("edited nearest neighbor")
     print("Mean Squared Error")
-    sigma, error = hyperparameter_tune_edited_regression(data_folds, label_folds, tune_data, tune_labels, [1, 2, 3, 5, 10 ,20, 40], [.1, .5, 1, 2, 3, 5])
+    sigma, error = hyperparameter_tune_edited_regression(data_folds, label_folds, tune_data, tune_labels, [1, 3, 5, 10, 20, 40], [.1, .5, 1, 5])
     print(cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_labels, error, sigma))
 
     # Get centroids from the raw data using k-means clustering

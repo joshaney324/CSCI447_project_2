@@ -292,14 +292,14 @@ def cross_validate_k_means_classification(data_folds, label_folds, tune_data, tu
     # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
     # return anything but prints out the metrics
 
-    k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
-    p_vals = [1, 2, 3, 4]
+    k_vals = [2, 3, 4, 5, 10, 15]
+    p_vals = [1, 2]
     # Set up variables
     precision_avg = 0.0
     recall_avg = 0.0
     accuracy_avg = 0.0
     folds = len(data_folds)
-    matrix_total = np.zeros((2,2))
+    matrix_total = np.zeros((2, 2))
     accuracies = []
 
     # For each testing fold, set up a training and testing set and then append the loss function values
@@ -369,9 +369,9 @@ def cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_la
     # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
     # return anything but prints out the metrics
 
-    k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
-    p_vals = [1, 2, 3, 4]
-    sigma_vals = [5]
+    k_vals = [2, 3, 4, 5, 10, 15]
+    p_vals = [1, 2]
+    sigma_vals = [0.1, 0.5, 1, 5]
     mean_squared_error_total = 0.0
 
     # For each testing fold, set up a training and testing set and then append the loss function values
