@@ -113,7 +113,7 @@ plt.show()
 
 ###################################################### REGRESSION ###################################################
 
-labels = ["Mean Squared Error"]
+labels = ["Relative Mean Squared Error"]
 
 # Abalone
 
