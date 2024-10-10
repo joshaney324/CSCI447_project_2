@@ -117,9 +117,9 @@ labels = ["Mean Squared Error"]
 
 # Abalone
 
-nearest_neighbor = [6.589548401155328]
-edited_nearest_neighbor = [6.212742680907067]
-k_means = [8.334849126492824]
+nearest_neighbor = [6.589548401155328 / 10.395265947347061]
+edited_nearest_neighbor = [6.212742680907067 / 10.395265947347061]
+k_means = [8.334849126492824 / 10.395265947347061]
 
 locations = np.arange(len(labels))
 
@@ -132,11 +132,11 @@ ENN = sub.bar(locations, edited_nearest_neighbor, width, label='Edited Nearest N
 KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighbor Classification Centroids from K-Means Clustering')
 
 sub.set_xlabel('Metrics')
-sub.set_title('Mean Squared Error From Different Models on Abalone Dataset')
+sub.set_title('Relative Mean Squared Error From Different Models on Abalone Dataset')
 sub.set_xticks(locations)
 sub.set_xticklabels(labels)
 
-sub.set_ylim(5, 10)
+sub.set_ylim(0, 2)
 
 sub.legend()
 
@@ -150,9 +150,9 @@ plt.show()
 
 # Hardware
 
-nearest_neighbor = [3728.5419498900687]
-edited_nearest_neighbor = [31827.131010909234]
-k_means = [4627.8231035897425]
+nearest_neighbor = [3728.5419498900687 / 25866.524705557593]
+edited_nearest_neighbor = [31827.131010909234 / 25866.524705557593]
+k_means = [4627.8231035897425 / 25866.524705557593]
 
 locations = np.arange(len(labels))
 
@@ -165,11 +165,11 @@ ENN = sub.bar(locations, edited_nearest_neighbor, width, label='Edited Nearest N
 KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighbor Classification Centroids from K-Means Clustering')
 
 sub.set_xlabel('Metrics')
-sub.set_title('Mean Squared Error From Different Models on Hardware Dataset')
+sub.set_title('Relative Mean Squared Error From Different Models on Hardware Dataset')
 sub.set_xticks(locations)
 sub.set_xticklabels(labels)
 
-sub.set_ylim(3000, 42000)
+sub.set_ylim(0, 2)
 
 sub.legend()
 
@@ -183,9 +183,9 @@ plt.show()
 
 # Forest
 
-nearest_neighbor = [5283.0001691368425]
-edited_nearest_neighbor = [4906.770218163989]
-k_means = [4814.371607523724]
+nearest_neighbor = [5283.0001691368425 / 4052.063224823412]
+edited_nearest_neighbor = [4906.770218163989 / 4052.063224823412]
+k_means = [4814.371607523724 / 4052.063224823412]
 
 locations = np.arange(len(labels))
 
@@ -198,11 +198,11 @@ ENN = sub.bar(locations, edited_nearest_neighbor, width, label='Edited Nearest N
 KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighbor Classification Centroids from K-Means Clustering')
 
 sub.set_xlabel('Metrics')
-sub.set_title('Mean Squared Error From Different Models on Forest Fire Dataset')
+sub.set_title('Relative Mean Squared Error From Different Models on Forest Fire Dataset')
 sub.set_xticks(locations)
 sub.set_xticklabels(labels)
 
-sub.set_ylim(4000, 6000)
+sub.set_ylim(0, 2)
 
 sub.legend()
 

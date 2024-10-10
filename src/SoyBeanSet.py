@@ -14,6 +14,7 @@ class SoyBeanSet:
         self.data = np.array(self.data)
         np.random.shuffle(self.data)
 
+        # Enumerate classes and replace the string labes
         unique_classes = np.unique(self.data[:, -1])
         numerical_class_labels = {}
         for i, unique_class in enumerate(unique_classes):
@@ -21,6 +22,7 @@ class SoyBeanSet:
 
         for i in range(len(self.data)):
             self.data[i, -1] = numerical_class_labels[self.data[i, -1]]
+
 
         features = self.data[:, :-1]
         labels = self.data[:, -1]
