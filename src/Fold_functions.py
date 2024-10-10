@@ -2,10 +2,15 @@ import numpy as np
 
 
 def get_tune_folds(data_folds, label_folds):
+    # This function is meant to get a training set and a tuning hold out folds based on a set of stratified folds. It
+    # takes in datafolds and labelsfolds and will return a train set and a test/tune set
+
     test_data = np.array(data_folds[-1])
     test_labels = np.array(label_folds[-1])
     train_data = []
     train_labels = []
+
+    # concatenate all the folds and leave the last as the hold out tune folds
     for j in range(len(data_folds) - 1):
         for instance, label in zip(data_folds[j], label_folds[j]):
             train_data.append(instance)
@@ -18,6 +23,9 @@ def get_tune_folds(data_folds, label_folds):
 
 
 def get_folds_regression(data, labels, num_folds):
+
+    # This function is meant to get a "stratified" set of folds for the regression tasks. It takes in the original data,
+    # labels, and the number of folds. It will return a list of datafolds and a list of label folds
 
     # Turn the data and labels into np arrays
     data = np.array(data)

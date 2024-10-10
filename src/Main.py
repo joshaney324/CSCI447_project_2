@@ -6,34 +6,37 @@ from ForestFires import ForestFiresSet
 from Hardware import MachineSet
 from HelperFunctions import test_classification_dataset, test_regression_dataset
 
+# Main
+# For each dataset it sets up the dataset and calls test_classification_dataset or test_regression_dataset which tests
+# all the algorithms on the dataset
+
 # BREAST CANCER
-# print("Breast Cancer")
-# breast_cancer = BreastCancerSet()
-# test_classification_dataset(breast_cancer, 550)
+print("Breast Cancer")
+breast_cancer = BreastCancerSet()
+test_classification_dataset(breast_cancer, 550)
 
 # SOY BEAN
 print("Soy Bean")
 soy = SoyBeanSet()
-# 38 from edited
 test_classification_dataset(soy, 30)
-#
-# # GLASS
-# print("Glass")
-# glass = GlassSet(7)
-# test_classification_dataset(glass, 170)
+
+# GLASS
+print("Glass")
+glass = GlassSet(7)
+test_classification_dataset(glass, 170)
 
 # HARDWARE
-# print("Hardware")
-# machine = MachineSet()
-# test_regression_dataset(machine, 50)
+print("Hardware")
+machine = MachineSet()
+test_regression_dataset(machine, 50)
 
-# # FOREST FIRES
-# print("Forest")
-# forest = ForestFiresSet()
-# test_regression_dataset(forest, 20)
-#
-# # ABALONE
-# print("Abalone")
-# abalone = AbaloneSet()
-# test_regression_dataset(abalone, 40)
+# FOREST FIRES
+print("Forest")
+forest = ForestFiresSet()
+test_regression_dataset(forest, 20)
+
+# ABALONE
+print("Abalone")
+abalone = AbaloneSet()
+test_regression_dataset(abalone, 40)
 

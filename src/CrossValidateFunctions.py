@@ -16,10 +16,8 @@ def cross_validate_classification(data_folds, label_folds, k_nearest_neighbors, 
     recall_avg = 0.0
     accuracy_avg = 0.0
     folds = len(data_folds)
-    matrix_total = np.zeros((2,2))
+    matrix_total = np.zeros((2, 2))
     accuracies = []
-    all_predictions = []
-    all_labels = []
 
     # For each testing fold, set up a training and testing set and then append the loss function values
     for i in range(len(data_folds)):
@@ -69,16 +67,13 @@ def cross_validate_classification(data_folds, label_folds, k_nearest_neighbors, 
         precision_avg += precision_total / counter
         recall_avg += recall_total / counter
         accuracy_avg += accuracy_total / counter
-    #
-    # print("Average precision: " + str(precision_avg / folds))
-    # print("Average recall: " + str(recall_avg / folds))
-    # print("Average accuracy: " + str(accuracy_avg / folds))
 
-    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds] # , matrix_total, accuracies, all_predictions, all_labels
-    # return (precision_avg / folds + recall_avg / folds + accuracy_avg / folds) / 3
+    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds]
 
 
 def cross_validate_regression(data_folds, label_folds, k_nearest_neighbors, p, sigma):
+
+    # This function is meant to cross validate the regression sets it returns a mean squared error
 
     # Set up variables
     mean_squared_error_avg = 0.0
@@ -112,11 +107,13 @@ def cross_validate_regression(data_folds, label_folds, k_nearest_neighbors, p, s
 
         mean_squared_error_avg += mean_squared_error(test_labels, predictions, len(predictions))
 
-    # print("average mean squared error: " + str(mean_squared_error_avg / folds))
     return mean_squared_error_avg / folds
 
 
 def cross_validate_tune_regression(data_folds, label_folds, test_data, test_labels, k_nearest_neighbors, p, sigma):
+
+    # This function is meant to cross validate the regression sets but leave out the testing folds and use the tune
+    # folds instead
 
     # Set up variables
     mean_squared_error_avg = 0.0
@@ -150,6 +147,9 @@ def cross_validate_tune_regression(data_folds, label_folds, test_data, test_labe
 
 def cross_validate_tune_classification(data_folds, label_folds, test_data, test_labels, k_nearest_neighbors, p):
 
+    # This function is meant to cross validate the classification sets but leave out the testing folds and use the tune
+    # folds instead
+
     # Set up variables
     precision_avg = 0.0
     recall_avg = 0.0
@@ -176,9 +176,11 @@ def cross_validate_tune_classification(data_folds, label_folds, test_data, test_
 
         predictions = []
 
+        # Get all predictions
         for datapoint in test_data:
             predictions.append(predict_classification(train_data, train_labels, datapoint, k_nearest_neighbors, p))
 
+        # Get all precision recall and accuracy vals
         precision_vals = np.array(precision(predictions, test_labels))
         recall_vals = np.array(recall(predictions, test_labels))
         accuracy_vals, matrix = accuracy(predictions, test_labels)
@@ -202,23 +204,17 @@ def cross_validate_tune_classification(data_folds, label_folds, test_data, test_
         recall_avg += recall_total / counter
         accuracy_avg += accuracy_total / counter
 
-    # print("Average precision: " + str(precision_avg / folds))
-    # print("Average recall: " + str(recall_avg / folds))
-    # print("Average accuracy: " + str(accuracy_avg / folds))
-
-    # return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds], matrix_total, accuracies, all_predictions, all_labels
-
     return (precision_avg / folds + recall_avg / folds + accuracy_avg / folds) / 3
 
 
 def cross_validate_edited_classification(data_folds, label_folds, tune_data, tune_labels):
-    # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
-    # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
-    # return anything but prints out the metrics
+    # the cross_validate edited function is meant to get the precision, recall and accuracy values from each fold then
+    # print out the average across folds. this function takes in a list of data folds and a list of label folds. it
+    # does not return anything but prints out the metrics
 
+    # Set up variables
     k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
     p_vals = [1, 2, 3, 4]
-    # Set up variables
     precision_avg = 0.0
     recall_avg = 0.0
     accuracy_avg = 0.0
@@ -248,14 +244,17 @@ def cross_validate_edited_classification(data_folds, label_folds, tune_data, tun
         test_data = np.array(test_data)
         test_labels = np.array(test_labels)
 
+        # Get edited dataset then tune
         edited_data = edited_nearest_neighbors_classification(train_data, train_labels, tune_data, tune_labels)
         edited_folds, edited_labels = get_folds_classification(edited_data[:, :-1], edited_data[:, -1], 10)
         k, p = hyperparameter_tune_knn_classification(edited_folds, edited_labels, tune_data, tune_labels, k_vals, p_vals)
 
+        # Get all predictions
         predictions = []
         for datapoint in test_data:
             predictions.append(predict_classification(edited_data[:, :-1], edited_data[:, -1], datapoint, k, p))
 
+        # Get all precision, accuracy, and recall vals
         precision_vals = np.array(precision(predictions, test_labels))
         recall_vals = np.array(recall(predictions, test_labels))
         accuracy_vals, matrix = accuracy(predictions, test_labels)
@@ -278,23 +277,18 @@ def cross_validate_edited_classification(data_folds, label_folds, tune_data, tun
         precision_avg += precision_total / counter
         recall_avg += recall_total / counter
         accuracy_avg += accuracy_total / counter
-    #
-    # print("Average precision: " + str(precision_avg / folds))
-    # print("Average recall: " + str(recall_avg / folds))
-    # print("Average accuracy: " + str(accuracy_avg / folds))
 
-    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds] # , matrix_total, accuracies, all_predictions, all_labels
-    # return (precision_avg / folds + recall_avg / folds + accuracy_avg / folds) / 3
+    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds]
 
 
 def cross_validate_k_means_classification(data_folds, label_folds, tune_data, tune_labels, num_clusters):
-    # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
-    # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
-    # return anything but prints out the metrics
+    # the cross_validate_k_means function is meant to get the precision, recall and accuracy values from each fold then
+    # print out the average across folds. This tests and tunes the k means algorithm and the plain knn classification
+    # algorithm
 
+    # Set up variables
     k_vals = [2, 3, 4, 5, 10, 15]
     p_vals = [1, 2]
-    # Set up variables
     precision_avg = 0.0
     recall_avg = 0.0
     accuracy_avg = 0.0
@@ -324,15 +318,18 @@ def cross_validate_k_means_classification(data_folds, label_folds, tune_data, tu
         test_data = np.array(test_data)
         test_labels = np.array(test_labels)
 
+        # Get centroids and tune the knn model
         centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
         centroid_folds, centroid_label_folds = get_folds_classification(centroids, centroid_labels, 10)
         k, p = hyperparameter_tune_knn_classification(centroid_folds, centroid_label_folds, tune_data, tune_labels, k_vals,
                                                       p_vals)
 
+        # Get all predictions
         predictions = []
         for datapoint in test_data:
             predictions.append(predict_classification(centroids, centroid_labels, datapoint, k, p))
 
+        # Get the precision, recall, and accuracy values for the final hyperparameters
         precision_vals = np.array(precision(predictions, test_labels))
         recall_vals = np.array(recall(predictions, test_labels))
         accuracy_vals, matrix = accuracy(predictions, test_labels)
@@ -355,19 +352,14 @@ def cross_validate_k_means_classification(data_folds, label_folds, tune_data, tu
         precision_avg += precision_total / counter
         recall_avg += recall_total / counter
         accuracy_avg += accuracy_total / counter
-    #
-    # print("Average precision: " + str(precision_avg / folds))
-    # print("Average recall: " + str(recall_avg / folds))
-    # print("Average accuracy: " + str(accuracy_avg / folds))
 
-    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds] # , matrix_total, accuracies, all_predictions, all_labels
-    # return (precision_avg / folds + recall_avg / folds + accuracy_avg / folds) / 3
+    return [precision_avg / folds, recall_avg / folds, accuracy_avg / folds]
+
 
 
 def cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_labels, error, sigma_edit):
-    # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
-    # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
-    # return anything but prints out the metrics
+    # This function is meant to edit, tune, and crossvalidate the edited knn regression model. It will return the mean
+    # squared error
 
     k_vals = [2, 3, 4, 5, 10, 15]
     p_vals = [1, 2]
@@ -396,11 +388,12 @@ def cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_la
         test_data = np.array(test_data)
         test_labels = np.array(test_labels)
 
+        # edit the data, split into folds, and tune
         edited_data = edited_nearest_neighbors_regression(train_data, train_labels, tune_data, tune_labels, error, sigma_edit)
         edited_data_folds, edited_label_folds = get_folds_regression(edited_data[:, :-1], edited_data[:, -1], 10)
         k, p, sigma = hyperparameter_tune_knn_regression(edited_data_folds, edited_label_folds, tune_data, tune_labels
                                                          , k_vals, p_vals, sigma_vals)
-
+        # Get all predictions
         predictions = []
         for datapoint in test_data:
             predictions.append(predict_regression(edited_data[:, :-1], edited_data[:, -1], datapoint, k, p, sigma))
@@ -411,9 +404,8 @@ def cross_validate_edited_regression(data_folds, label_folds, tune_data, tune_la
 
 
 def cross_validate_k_means_regression(data_folds, label_folds, tune_data, tune_labels, num_clusters):
-    # the cross_validate function is meant to get the precision, recall and accuracy values from each fold then print
-    # out the average across folds. this function takes in a list of data folds and a list of label folds. it does not
-    # return anything but prints out the metrics
+    # This functino is meant to get the centroids of a set of datafolds, tune, and crossvalidate. It returns a mean
+    # squared error value at the end
 
     k_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
     p_vals = [1, 2, 3, 4]
@@ -442,11 +434,13 @@ def cross_validate_k_means_regression(data_folds, label_folds, tune_data, tune_l
         test_data = np.array(test_data)
         test_labels = np.array(test_labels)
 
+        # get centroids, centroid folds and tune off of the new train set
         centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
         centroid_data_folds, centroid_label_folds = get_folds_regression(centroids, centroid_labels, 10)
         k, p, sigma = hyperparameter_tune_knn_regression(centroid_data_folds, centroid_label_folds, tune_data, tune_labels
                                                          , k_vals, p_vals, sigma_vals)
 
+        # get all predictions and get the final mean squared error
         predictions = []
         for datapoint in test_data:
             predictions.append(predict_regression(centroids, centroid_labels, datapoint, k, p, sigma))

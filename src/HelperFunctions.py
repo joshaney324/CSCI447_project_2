@@ -3,6 +3,8 @@ from HyperparameterTune import hyperparameter_tune_edited_regression
 from CrossValidateFunctions import *
 
 
+# This function is meant to run all the algorithms on the classification sets. It performs everything we talk about in
+# the paper
 def test_classification_dataset(dataset, num_clusters):
     # Get folds from the dataset
     data_folds, label_folds = get_folds_classification(dataset.get_data(), dataset.get_labels(), 10)
@@ -33,6 +35,8 @@ def test_classification_dataset(dataset, num_clusters):
     print(str(cross_validate_k_means_classification(data_folds, label_folds, tune_data, tune_labels, num_clusters)))
 
 
+# This function is meant to run all the algorithms on the regression sets. It performs everything we talk about in
+# the paper
 def test_regression_dataset(dataset, num_clusters):
     # Get folds from the dataset
     data_folds, label_folds = get_folds_regression(dataset.get_data(), dataset.get_labels(), 10)
@@ -69,6 +73,8 @@ def test_regression_dataset(dataset, num_clusters):
     print(cross_validate_k_means_regression(data_folds, label_folds, tune_data, tune_labels, num_clusters))
 
 
+# This function is meant to perform 1-hot coding on any categorical data. It will return a manipulated version of the
+# data
 def binary_encoding(data, indices):
     uniques = [np.unique(data[:, col]) for col in indices]
 

@@ -118,7 +118,8 @@ def k_means_cluster(train_data, train_labels, num_clusters):
                     else:
                         centroid_ave = train_data[entry_index]
                         counter += 1
-            # take the average features of all entries assigned to the cluster, or leave the cluster as is if no entries were assigned.
+            # take the average features of all entries assigned to the cluster, or leave the cluster as is if no entries
+            # were assigned.
             if counter == 0:
                 centroid_ave = centroids[centroid_index]
             else:
@@ -137,16 +138,6 @@ def k_means_cluster(train_data, train_labels, num_clusters):
                 centroid_labels[centroid_index] = train_labels[entry_index]
                 min_distance = minkowski_metrics(centroids[centroid_index], train_data[entry_index], 2)
     return centroids, centroid_labels[:len(centroids)]
-
-
-# def clustered_classification(train_data, train_labels, test_point, num_neighbors, p, num_clusters):
-#     centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
-#     return predict_classification(centroids, centroid_labels, test_point, num_neighbors, p)
-
-
-# def clustered_regression(train_data, train_labels, test_point, num_neighbors, p, sigma, num_clusters):
-#     centroids, centroid_labels = k_means_cluster(train_data, train_labels, num_clusters)
-#     return predict_regression(centroids, centroid_labels, test_point, num_neighbors, p, sigma)
 
 
 def edited_nearest_neighbors_classification(train_data, train_labels, test_data, test_labels):
@@ -208,6 +199,8 @@ def edited_nearest_neighbors_classification(train_data, train_labels, test_data,
     return edited_dataset
 
 
+# This function is meant to complete the edited part of the KNN regression it takes in a training dataset as well as a
+# testing dataset as well as an error hyperparameter and a sigma hyperparameter. This returns a final edited dataset
 def edited_nearest_neighbors_regression(train_data, train_labels, test_data, test_labels, error, sigma):
     # Force a shape on train labels so you can concatenate
     if train_labels.ndim == 1:

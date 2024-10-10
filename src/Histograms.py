@@ -4,6 +4,9 @@ from Hardware import MachineSet
 import matplotlib.pyplot as plt
 import numpy as np
 
+# This file is meant to create all the histograms for the figures. It creates the histogram based off of the
+# distribution of the value we are predicting
+
 # Abalone
 
 abalone = AbaloneSet()

@@ -23,13 +23,15 @@ class SoyBeanSet:
         for i in range(len(self.data)):
             self.data[i, -1] = numerical_class_labels[self.data[i, -1]]
 
-
+        # Set up features and labels
         features = self.data[:, :-1]
         labels = self.data[:, -1]
         features = np.array(features, dtype=float)
         labels = np.array(labels).reshape(-1, 1)
 
+        # Delete Unnecessary
         features = np.delete(features, [10, 12, 13, 14, 15, 16, 17, 18, 28, 29, 30, 31, 32, 33], axis=1)
+
         # Normalize all the feature rows from 0 to 1
         features_min = features.min(axis=0)
         features_max = features.max(axis=0)

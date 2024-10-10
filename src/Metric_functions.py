@@ -2,6 +2,8 @@ import numpy as np
 
 
 def minkowski_metrics(initial_point, target_point, p):
+    # This function is meant to return a distance. It takes in an initial point and a target point as well as a p value.
+    # The p value represents the hyperparameter for the actual Minkwoski Metric
     total = 0
     for feature_i, feature_t in zip(initial_point, target_point):
         total += abs(feature_i - feature_t) ** p
@@ -10,10 +12,16 @@ def minkowski_metrics(initial_point, target_point, p):
 
 
 def rbf_kernel(distance, sigma):
+    # This function is meant to return a weight from the rbf kernel based off of the distance. It takes in a distance as
+    # well as a sigma hyperparameter
     return np.exp(- (distance ** 2) / (2 * sigma ** 2))
 
 
 def mean_squared_error(predictions, true_vals, n):
+    # This function is meant to return a mean squared error value based off of the mean squared error function. This
+    # function takes in a set of predictions and a set of true values. It also takes a n value which represents the
+    # amount of predictions that were made
+
     error = 0.0
 
     # square all the differences between the predictions and the true values

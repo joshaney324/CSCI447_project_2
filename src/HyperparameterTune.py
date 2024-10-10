@@ -1,6 +1,7 @@
 import math as math
 
-
+# This function is meant to tune the classification KNN algorithms. It takes in datafolds, labels folds, a test/tune set
+# it also takes a list of k vals and p vals to test in the grid search
 def hyperparameter_tune_knn_classification(data_folds, label_folds, test_data, test_labels, k_vals, p_vals):
     from CrossValidateFunctions import (cross_validate_tune_classification)
     # set up best value variables
@@ -24,6 +25,8 @@ def hyperparameter_tune_knn_classification(data_folds, label_folds, test_data, t
     return k, p
 
 
+# This function is meant to tune all of the regression knn models. It takes datafolds and label folds as well as a
+# test/tune set. It also takes in a list of k vals, p vals, and sigma vals.
 def hyperparameter_tune_knn_regression(data_folds, label_folds, test_data, test_labels, k_vals, p_vals, sigma_vals):
     from CrossValidateFunctions import (cross_validate_tune_regression)
     # Set up best value variables
@@ -52,6 +55,9 @@ def hyperparameter_tune_knn_regression(data_folds, label_folds, test_data, test_
     return k, p, sigma
 
 
+# This function is meant to tune the edited knn regression. It tunes the error value and sigma value. It takes in
+# datafolds, label folds, test/tune set, a list of error values, and a list of sigma values. It will return the optimal
+# hyperparameters
 def hyperparameter_tune_edited_regression(data_folds, label_folds, tune_data, tune_labels, threshold_vals, sigma_vals):
     from CrossValidateFunctions import cross_validate_edited_regression
     # Set up best value variabes
@@ -73,9 +79,6 @@ def hyperparameter_tune_edited_regression(data_folds, label_folds, tune_data, tu
                     error = threshold_vals[threshold_val_index]
                     sigma = sigma_vals[sigma_val_index]
                     min_mean_squared_error = mean_squared_val
-                    # print("error: " + str(error))
-                    # print("sigma: " + str(sigma))
-                    # print("min_mean_squared_error: " + str(min_mean_squared_error))
 
             except:
                 pass

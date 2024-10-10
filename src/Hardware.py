@@ -10,21 +10,9 @@ class MachineSet:
         with open("../datasets/machine.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
 
-        # convert data to a numpy array, remove extra row, and shuffle
+        # convert data to a numpy array, remove unnecessary features, and normalize
         self.data = np.array(self.data)
         self.data = self.data[:, 2:9]
-        # first_row = self.data[:, 0]
-        # rest = self.data[:, 2:]
-        # if first_row.ndim == 1:
-        #     first_row = first_row.reshape(-1, 1)
-        #
-        # self.data = np.concatenate((first_row, rest), axis=1)
-        # self.data = self.data[:, :-1]
-        # np.random.shuffle(self.data)
-        #
-        # # apply binary coding to categorical columns
-        # self.data = binary_encoding(self.data, [0])
-        # self.data = np.array(self.data, dtype=float)
 
         features = self.data[:, :-1]
         labels = self.data[:, -1]

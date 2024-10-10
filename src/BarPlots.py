@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# this is a function to add the labels in the correct area above a certain bar from the bar plot
 def add_labels(bar_line, values):
     for bar in bar_line:
         height = bar.get_height()
@@ -12,6 +13,8 @@ def add_labels(bar_line, values):
 labels = ['Precision', 'Recall', 'Accuracy']
 
 ########################################## CLASSIFICATION ################################################
+
+# For each classification dataset create a bar plot of all the metrics and create a pca plot of the data
 
 # Breast Cancer
 
@@ -134,7 +137,8 @@ KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighb
 sub.set_xlabel('Metrics')
 sub.set_title('Relative Mean Squared Error From Different Models on Abalone Dataset')
 sub.set_xticks(locations)
-sub.set_xticklabels(labels)
+sub.axes.get_xaxis().set_visible(False)
+sub.set_ylabel('Relative Mean Squared Error')
 
 sub.set_ylim(0, 2)
 
@@ -167,7 +171,8 @@ KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighb
 sub.set_xlabel('Metrics')
 sub.set_title('Relative Mean Squared Error From Different Models on Hardware Dataset')
 sub.set_xticks(locations)
-sub.set_xticklabels(labels)
+sub.axes.get_xaxis().set_visible(False)
+sub.set_ylabel('Relative Mean Squared Error')
 
 sub.set_ylim(0, 2)
 
@@ -200,7 +205,8 @@ KNN_K_means = sub.bar(locations + width, k_means, width, label='K Nearest Neighb
 sub.set_xlabel('Metrics')
 sub.set_title('Relative Mean Squared Error From Different Models on Forest Fire Dataset')
 sub.set_xticks(locations)
-sub.set_xticklabels(labels)
+sub.axes.get_xaxis().set_visible(False)
+sub.set_ylabel('Relative Mean Squared Error')
 
 sub.set_ylim(0, 2)
 

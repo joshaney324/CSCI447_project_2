@@ -6,18 +6,19 @@ from SoyBeanSet import SoyBeanSet
 from GlassSet import GlassSet
 from matplotlib.lines import Line2D
 
-# Breast
+# Breast Cancer dataset
 breast = BreastCancerSet()
 data = breast.get_data()
 labels = breast.get_labels()
 
+# Get PCA plots
 pca = PCA(n_components=2)
 principal_components = pca.fit_transform(data)
 
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(principal_components[:, 0], principal_components[:, 1], c=labels, cmap='viridis')
 
-
+# Get legend labels and axis labels
 legend_elements = [
     Line2D([0], [0], marker='o', color='w', label='Malignant',
            markerfacecolor='yellow', markersize=10),
@@ -36,13 +37,14 @@ soy = SoyBeanSet()
 data = soy.get_data()
 labels = soy.get_labels()
 
+# Get PCA Plot
 pca = PCA(n_components=2)
 principal_components = pca.fit_transform(data)
 
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(principal_components[:, 0], principal_components[:, 1], c=labels, cmap='viridis')
 
-
+# Set legend labels and axis labels
 legend_elements = [
 
     Line2D([0], [0], marker='o', color='w', label='d4',

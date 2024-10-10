@@ -1,8 +1,3 @@
-# Missing Attribute Values: None
-# 9 features, int, float, categorical
-# Note: several of the attributes may be correlated, thus it makes sense to apply some sort of 
-# feature selection.
-
 import csv
 import numpy as np
 import random as random

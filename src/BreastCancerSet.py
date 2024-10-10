@@ -10,6 +10,7 @@ class BreastCancerSet:
         with open("../datasets/breast-cancer-wisconsin.data", "r") as data_file:
             self.data = list(csv.reader(data_file, delimiter=','))
 
+        # remove missing values
         valid_rows = []
 
         for row in self.data:
