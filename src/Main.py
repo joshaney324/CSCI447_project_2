@@ -11,11 +11,11 @@ from HelperFunctions import test_classification_dataset, test_regression_dataset
 # breast_cancer = BreastCancerSet()
 # test_classification_dataset(breast_cancer, 550)
 
-# # SOY BEAN
-# print("Soy Bean")
-# soy = SoyBeanSet()
-# # 38 from edited
-# test_classification_dataset(soy, 30)
+# SOY BEAN
+print("Soy Bean")
+soy = SoyBeanSet()
+# 38 from edited
+test_classification_dataset(soy, 30)
 #
 # # GLASS
 # print("Glass")
@@ -27,13 +27,13 @@ from HelperFunctions import test_classification_dataset, test_regression_dataset
 # machine = MachineSet()
 # test_regression_dataset(machine, 50)
 
-# FOREST FIRES
-print("Forest")
-forest = ForestFiresSet()
-test_regression_dataset(forest, 20)
-
-# ABALONE
-print("Abalone")
-abalone = AbaloneSet()
-test_regression_dataset(abalone, 40)
+# # FOREST FIRES
+# print("Forest")
+# forest = ForestFiresSet()
+# test_regression_dataset(forest, 20)
+#
+# # ABALONE
+# print("Abalone")
+# abalone = AbaloneSet()
+# test_regression_dataset(abalone, 40)
 
